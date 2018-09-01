@@ -62,7 +62,7 @@ function logout($user_id){
 
 function owners_list(){
    $con = new Z_MySQL();
-   $data=$con->queryNoDML("SELECT username,user_id FROM `login` WHERE userType = 'owner'")[0];
+   $data=$con->queryNoDML("SELECT login.user_id AS user_id, login.username AS username FROM `login` INNER JOIN `userTypes` ON login.userType = userTypes.userTypeID AND userTypes.text = 'owner'")[0];
    if($data["user_id"] > 0) {
        $token = createToken();
        $username = $data["username"];
