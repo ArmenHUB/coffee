@@ -42,7 +42,7 @@ function device_list(){
 function device_register($device_type,$device_name,$location){
    $con = new Z_MySQL();
     if ($con->queryDML("INSERT INTO `deviceType`(`deviceTypeID`, `text`, `langID`) VALUES ('1', '$device_type', '1')")) {
-       if ($con->queryDML("INSERT INTO `devices`(`deviceID`, `deviceTypeID`, `deviceName`, `deviceStatusID`, `location`, `button_img`) VALUES ('1', '1', '$device_name', '1','$location', 'image.png')")) {
+       if ($con->queryDML("INSERT INTO `devices`(`deviceID`, `deviceTypeID`, `deviceName`, `deviceStatusID`, `location`) VALUES ('1', '1', '$device_name', '1','$location')")) {
           
        }   
     } 
