@@ -14,7 +14,7 @@ switch ($params->command) {
         $username = $params->username;
         $password = md5($params->password);
         $host = $params->host;
-        $answer = checkLogin($username, $password, $host);
+        $answer = check_user_password($username, $password, $host);
         break;
     case "reset_password":
         $user_id = $params->user_id;
@@ -22,27 +22,29 @@ switch ($params->command) {
         $answer = reset_password($user_id,$email);
         break;    
      case "logout":
-         $user_id = $income_data->user_id;
+         $user_id = $params->user_id;
+           $token = $params->token;
          $answer = logout($user_id);
         break;
-     case "admin_device_tree":
-         $answer = owners_list();
+     case "get_user_list":
+         $userTypeID = $params->user_type_id;
+         $answer = get_user_list($userTypeID);
         break;
-     case "Create company":
-         $host = $params->host;
-         $mail = $params->mail;
-         $user_id = $income_data->user_id;
-         $company_name = $params->company_name;
-         $answer = add_owner($host,$mail,$company_name,$user_id);
-       break;   
-    case "menu":
-        if ($income_data->user_id == 1) { 
-            $info = 
-            $answer = ["user_id" => $income_data->user_id, "token" => "12345678", "error" => "0", "info" => $info]];
-        } else if ($income_data->user_id == 2) { 
-            $info = 
-            $answer = ["user_id" => $income_data->user_id, "token" => "12345678", "error" => "0", "info" => $info]];
+     case "check_user":
+        if (check_login_timeout($params->user_id, $params->token)) {
+            $answer = ["token" => $params->token, "user_id" => $params->user_id, "error" => 0, "info" => ["token" => $params->token, "user_id" => $params->user_id, "host" => $params->host]];
+        } else {
+            $answer = ["token" => -1, "user_id" => 0, "error" => 0, "info" => ["token" => -1, "user_id" => 0, "host" => $params->host]];
         }
+        break;   
+    case "user_add_edit":
+        $user_id = $params->user_id;
+        $userTypeID = $params->user_type_id;
+        $username = $params->username;
+        $password = md5($params->password);
+        $host = $params->host;
+        $mail = $params->mail;
+        $answer = add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail);
         break;
 }
 if ($answer['error'] > 0) {
@@ -50,7 +52,7 @@ if ($answer['error'] > 0) {
 }
 echo json_encode($answer);
 
-function checkLogin($username, $password, $host)
+function check_user_password($username, $password, $host)
 {
    $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE `username` = '{$username}' AND `password` = '{$password}' AND `host` = '{$host}'")[0];
@@ -60,66 +62,92 @@ function checkLogin($username, $password, $host)
         $host = $data["host"];
         $token = createToken();
         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-        if ($con->queryDML("INSERT INTO `loggedUsers`(`user_id`, `lastAction`, `token`) VALUES ({$user_id}, '{$cur_time}', '{$token}')")) {
-            return ["token" => $token, "user_id" => $data["user_id"], "error" => 0, "info" => ["token" => $token, "user_id" => $data["user_id"], "host" => $host], "userType" => $usertype];
+
+        if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ({$user_id}, '$cur_time', '$token')")) {
+            return ["token" => $token, "user_id" =>  $user_id, "error" => 0, "info" => ["token" => $token, "user_id" => $user_id, "userType" => $usertype]];
         }else{
-            return ["token" => $token, "user_id" => $data["user_id"], "error" => 5, "info" => ["token" => $token, "user_id" => $data["user_id"], "host" => $host], "userType" => $usertype];
+            return ["token" => $token, "user_id" =>  $user_id, "error" => 5, "info" => ["token" => $token, "user_id" =>  $user_id, "userType" => $usertype]];
         }
     }
-    return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
-}
+     return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
 
+}
 function logout($user_id){
     $con = new Z_MySQL();
      if($con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`user_id` = {$user_id}")){
          return ["token" => -1, "user_id" => 0, "error" => 0, "info" => ["token" => -1, "user_id" => 0]];
      }
+     return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
 }
-
-function owners_list(){
+function get_user_list($userTypeID){
    $con = new Z_MySQL();
-   $data=$con->queryNoDML("SELECT users.userID AS user_id, users.username AS username FROM `users` INNER JOIN `userTypes` ON users.userTypeID = userTypes.userTypeID AND userTypes.text = 'owner'")[0];
-   if($data["user_id"] > 0) {
-       $token = createToken();
-       $username = $data["username"];
-       return ["user_id" => $data["user_id"], "token" => $token, "error" => "0","info" => ["token" => $token, "user_id" => $data["user_id"], "username" => $username]];
-      
+   if($userTypeID == 0){
+      $data=$con->queryNoDML("SELECT userIDD,username,host FROM `users`");
+        if($data) {
+          return ["user_id" => $user_id, "token" => $token, "error" => "0","info" => $data];
+        }
+       return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];    
    }
+   else{
+     $data=$con->queryNoDML("SELECT userID,username,host FROM `users` WHERE `userTypeID` = '{$userTypeID}'")[0];
+     if($data) {
+       $user_id =  $data["userID"];
+       $username = $data["username"];
+       $host = $data["host"];
+       return ["user_id" => $user_id, "token" => $token, "error" => "0","info" => ["host" => $host, "user_id" => $user_id, "username" => $username]];
+     }
    return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+   }
+
 }
-
-function add_owner($host,$mail,$company_name,$user_id){
+function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
+    $con = new Z_MySQL();  
+        if($user_id == 0){
+             $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' OR `host` = '$host' OR `email` = '$mail'")[0];
+           if($data1['userID'] > 0){
+              return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+           }
+           else{              
+               $data=$con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`) VALUES ('$username','$password','$host','$userTypeID','$mail')");
+               if($data){
+                 return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+               }
+               else{
+                 return ["token" => 0, "user_id" => 0, "error" => 4, "info" => []];
+               }
+           } 
+       }
+       else{
+          $data=$con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$userTypeID}', `email` = '{$mail}' WHERE  `userID` = '{$user_id}'"); 
+         if($data){
+           return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+         }
+         else{
+          return ["token" => 0, "user_id" => 0, "error" => 4, "info" => []];
+         }
+       }
+}  
+function check_login_timeout($user_id,$token){
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `userValueID` FROM `userValue` WHERE `text` = '{$host}' OR `text` = '{$mail}' OR `text` = '{$company_name}'")[0];
-    if($data["userValueID"] <= 0) {
-        $con->queryDML("INSERT INTO `userValue`(`text`, `langID`) VALUES ('$host', '1')");
-        $data = $con->queryNoDML("SELECT `userValueID` FROM `userValue` WHERE `text` = '$host'")[0];
-        $userParamValueID = $data['userValueID'];
-        $con->queryDML("INSERT INTO `userInfo`(`userID`, `userParamNameID`, `userParamValueID`) VALUES ('$user_id', '1','$userParamValueID')");
-
-        $con->queryDML("INSERT INTO `userValue`(`text`, `langID`) VALUES ('$mail', '1')");
-        $data1 = $con->queryNoDML("SELECT `userValueID` FROM `userValue` WHERE `text` = '$mail'")[0];
-        $userParamValueID1 = $data1['userValueID'];
-        $con->queryDML("INSERT INTO `userInfo`(`userID`, `userParamNameID`, `userParamValueID`) VALUES ('$user_id', '2','$userParamValueID1')");
-
-        $con->queryDML("INSERT INTO `userValue`(`text`, `langID`) VALUES ('$company_name', '1')");
-        $data2 = $con->queryNoDML("SELECT `userValueID` FROM `userValue` WHERE `text` = '$company_name'")[0];
-        $userParamValueID2 = $data2['userValueID'];
-        $con->queryDML("INSERT INTO `userInfo`(`userID`, `userParamNameID`, `userParamValueID`) VALUES ('$user_id', '3','$userParamValueID2')");
-
+    $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
+    $answer = $con->queryNoDML("SELECT `loggedUsers`.`lastAction` AS 'lastAction' FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id} AND `loggedUsers`.`token` = '{$token}'")[0]["lastAction"];
+    $cur_date = new DateTime($cur_time);
+    $last_date = new DateTime($answer);
+    if ($answer != "") {
+        if ($last_date->getTimestamp() + LOG_OFF_DELAY > $cur_date->getTimestamp() || LOG_OFF_DELAY === 0) {
+            $con->queryDML("UPDATE `loggedUsers` SET `lastAction`='{$cur_time}' WHERE `loggedUsers`.`userID` = {$user_id}");
+            return true;
+        }
+        else{
+            $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
+        }
         
     }
-    return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+    return false;
 }
-function check_login_timeout(){
-   
-}
-
 function reset_password($user_id,$email){
    
    
-
-
 }
 function createToken()
 {
