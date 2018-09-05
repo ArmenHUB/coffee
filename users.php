@@ -13,17 +13,17 @@ switch ($params->command) {
     case "login":
         $username = $params->username;
         $password = md5($params->password);
-        $host = $params->host;
+        $host = $income_data->host;
         $answer = check_user_password($username, $password, $host);
         break;
     case "reset_password":
-        $user_id = $params->user_id;
+        $user_id = $income_data->user_id;
         $email = $params->email;
         $answer = reset_password($user_id,$email);
         break;    
      case "logout":
-         $user_id = $params->user_id;
-           $token = $params->token;
+         $user_id = $income_data->user_id;
+         $token = $income_data->token;
          $answer = logout($user_id);
         break;
      case "get_user_list":
@@ -31,21 +31,31 @@ switch ($params->command) {
          $answer = get_user_list($userTypeID);
         break;
      case "check_user":
-        if (check_login_timeout($params->user_id, $params->token)) {
+        if (check_login_timeout($income_data->user_id, $income_data->token)) {
             $answer = ["token" => $params->token, "user_id" => $params->user_id, "error" => 0, "info" => ["token" => $params->token, "user_id" => $params->user_id, "host" => $params->host]];
         } else {
             $answer = ["token" => -1, "user_id" => 0, "error" => 0, "info" => ["token" => -1, "user_id" => 0, "host" => $params->host]];
         }
         break;   
     case "user_add_edit":
-        $user_id = $params->user_id;
+        $user_id = $income_data->user_id;
         $userTypeID = $params->user_type_id;
         $username = $params->username;
         $password = md5($params->password);
-        $host = $params->host;
+        $host = $income_data->host;
         $mail = $params->mail;
         $answer = add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail);
         break;
+    case "check_password":
+        $user_id = $income_data->user_id;
+        $password = md5($params->password);
+        $answer = check_password($user_id,$password);
+        break;
+    case "change_password":
+        $user_id = $income_data->user_id;
+        $new_password = md5($params->password);
+        $answer = change_password($user_id,$new_password);
+        break;     
 }
 if ($answer['error'] > 0) {
     $answer['error'] = getError($answer['error'], $income_data->lang_id);
@@ -77,16 +87,16 @@ function logout($user_id){
      if($con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`user_id` = {$user_id}")){
          return ["token" => -1, "user_id" => 0, "error" => 0, "info" => ["token" => -1, "user_id" => 0]];
      }
-     return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+     return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
 }
 function get_user_list($userTypeID){
    $con = new Z_MySQL();
    if($userTypeID == 0){
-      $data=$con->queryNoDML("SELECT userIDD,username,host FROM `users`");
+      $data=$con->queryNoDML("SELECT userID,username,host FROM `users`");
         if($data) {
           return ["user_id" => $user_id, "token" => $token, "error" => "0","info" => $data];
         }
-       return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];    
+         return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];    
    }
    else{
      $data=$con->queryNoDML("SELECT userID,username,host FROM `users` WHERE `userTypeID` = '{$userTypeID}'")[0];
@@ -100,6 +110,7 @@ function get_user_list($userTypeID){
    }
 
 }
+
 function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
     $con = new Z_MySQL();  
         if($user_id == 0){
@@ -118,12 +129,13 @@ function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
            } 
        }
        else{
-          $data=$con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$userTypeID}', `email` = '{$mail}' WHERE  `userID` = '{$user_id}'"); 
+          $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'"); 
          if($data){
+           $con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$userTypeID}', `email` = '{$mail}' WHERE  `userID` = '{$user_id}'");
            return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
          }
          else{
-          return ["token" => 0, "user_id" => 0, "error" => 4, "info" => []];
+          return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
          }
        }
 }  
@@ -144,6 +156,27 @@ function check_login_timeout($user_id,$token){
         
     }
     return false;
+}
+function check_password($user_id,$password){
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id' AND `password`='$password'");
+    if($data){
+      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+    }
+    else{
+      return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+    }
+}
+function change_password($user_id,$new_password){
+   $con = new Z_MySQL();
+   $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
+   if($data){
+      $con->queryDML("UPDATE `users` SET `password`='{$new_password}' WHERE `users`.`userID` = '{$user_id}'");
+      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+   }
+   else{
+      return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+   }  
 }
 function reset_password($user_id,$email){
    
