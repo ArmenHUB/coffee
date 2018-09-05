@@ -2,6 +2,8 @@
 
 require_once "z_mysql.php";
 require_once "errors.php";
+require_once "be_mail.php";
+
 //get send data //
 $all_data = file_get_contents('php://input');
 $income_data = json_decode($all_data);
@@ -13,7 +15,7 @@ switch ($params->command) {
     case "login":
         $username = $params->username;
         $password = md5($params->password);
-        $host = $income_data->host;
+        $host = $params->host;
         $answer = check_user_password($username, $password, $host);
         break;
     case "reset_password":
@@ -76,31 +78,30 @@ function check_user_password($username, $password, $host)
         $host = $data["host"];
         $token = createToken();
         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-
-        if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ({$user_id}, '$cur_time', '$token')")) {
-            return ["token" => $token, "user_id" =>  $user_id, "error" => 0, "info" => ["token" => $token, "user_id" => $user_id, "userType" => $usertype]];
-        }else{
-            return ["token" => $token, "user_id" =>  $user_id, "error" => 5, "info" => ["token" => $token, "user_id" =>  $user_id, "userType" => $usertype]];
+        if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
+            return ["token" => $token, "user_id" =>  $user_id, "error" => 0, "lang_id"=>$income_data->lang_id, "info" => ["token" => $token, "user_id" => $user_id, "userType" => $usertype]];
+        }else{          
+            return ["token" => $token, "user_id" =>  $user_id, "error" => 5, "lang_id"=>$income_data->lang_id, "info" => ["token" => $token, "user_id" =>  $user_id, "userType" => $usertype]];
         }
     }
-     return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+     return ["token" => "0", "user_id" => 0, "error" => 2,  "lang_id"=>$income_data->lang_id, "info" => []];
 
 }
 function logout($user_id){
     $con = new Z_MySQL();
      if($con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`user_id` = {$user_id}")){
-         return ["token" => -1, "user_id" => 0, "error" => 0, "info" => ["token" => -1, "user_id" => 0]];
+         return ["token" => -1, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
      }
-     return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+     return ["token" => 0, "user_id" => 0, "error" => 7,  "lang_id"=>$income_data->lang_id, "info" => []];
 }
 function get_user_list($userTypeID){
    $con = new Z_MySQL();
    if($userTypeID == 0){
       $data=$con->queryNoDML("SELECT userID,username,host FROM `users`");
         if($data) {
-          return ["user_id" => $user_id, "token" => $token, "error" => "0","info" => $data];
+          return ["user_id" => $user_id, "token" => $token, "error" => "0",  "lang_id"=>$income_data->lang_id, "info" => $data];
         }
-         return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];    
+         return ["token" => 0, "user_id" => 0, "error" => 7,  "lang_id"=>$income_data->lang_id, "info" => []];    
    }
    else{
      $data=$con->queryNoDML("SELECT userID,username,host FROM `users` WHERE `userTypeID` = '{$userTypeID}'")[0];
@@ -108,9 +109,9 @@ function get_user_list($userTypeID){
        $user_id =  $data["userID"];
        $username = $data["username"];
        $host = $data["host"];
-       return ["user_id" => $user_id, "token" => $token, "error" => "0","info" => ["host" => $host, "user_id" => $user_id, "username" => $username]];
+       return ["user_id" => $user_id, "token" => $token, "error" => "0",  "lang_id"=>$income_data->lang_id, "info" => ["host" => $host, "user_id" => $user_id, "username" => $username]];
      }
-   return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+   return ["token" => 0, "user_id" => 0, "error" => 2,  "lang_id"=>$income_data->lang_id, "info" => []];
    }
 
 }
@@ -120,15 +121,15 @@ function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
         if($user_id == 0){
              $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' OR `host` = '$host' OR `email` = '$mail'")[0];
            if($data1['userID'] > 0){
-              return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+              return ["token" => 0, "user_id" => 0, "error" => 2,  "lang_id"=>$income_data->lang_id, "info" => []];
            }
            else{              
                $data=$con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`) VALUES ('$username','$password','$host','$userTypeID','$mail')");
                if($data){
-                 return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+                 return ["token" => 0, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
                }
                else{
-                 return ["token" => 0, "user_id" => 0, "error" => 4, "info" => []];
+                 return ["token" => 0, "user_id" => 0, "error" => 4,  "lang_id"=>$income_data->lang_id, "info" => []];
                }
            } 
        }
@@ -136,10 +137,10 @@ function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
           $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'"); 
          if($data){
            $con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$userTypeID}', `email` = '{$mail}' WHERE  `userID` = '{$user_id}'");
-           return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+           return ["token" => 0, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
          }
          else{
-          return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+          return ["token" => 0, "user_id" => 0, "error" => 7,  "lang_id"=>$income_data->lang_id, "info" => []];
          }
        }
 } 
@@ -165,10 +166,10 @@ function check_password($user_id,$password){
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id' AND `password`='$password'");
     if($data){
-      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
     }
     else{
-      return ["token" => 0, "user_id" => 0, "error" => 2, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 2,  "lang_id"=>$income_data->lang_id, "info" => []];
     }
 }
 function change_password($user_id,$new_password){
@@ -176,10 +177,10 @@ function change_password($user_id,$new_password){
    $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
    if($data){
       $con->queryDML("UPDATE `users` SET `password`='{$new_password}' WHERE `users`.`userID` = '{$user_id}'");
-      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
    }
    else{
-      return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 7,  "lang_id"=>$income_data->lang_id,     "info" => []];
    }  
 }
 function remove_user($user_id){
@@ -187,14 +188,14 @@ function remove_user($user_id){
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
    if($data){
       $con->queryDML("DELETE FROM users WHERE `userID`= '$user_id'");
-      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 0,  "lang_id"=>$income_data->lang_id, "info" => []];
    }
    else{
-      return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+      return ["token" => 0, "user_id" => 0, "error" => 7,  "lang_id"=>$income_data->lang_id, "info" => []];
    }
 }
 function reset_password($user_id,$email){
-   
+  
    
 }
 function createToken()
