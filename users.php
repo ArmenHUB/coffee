@@ -55,7 +55,11 @@ switch ($params->command) {
         $user_id = $income_data->user_id;
         $new_password = md5($params->password);
         $answer = change_password($user_id,$new_password);
-        break;     
+        break; 
+    case "remove_user":
+        $user_id = $income_data->user_id;
+        $answer = remove_user($user_id);
+       break;        
 }
 if ($answer['error'] > 0) {
     $answer['error'] = getError($answer['error'], $income_data->lang_id);
@@ -138,7 +142,7 @@ function add_edit_user($user_id,$username, $password, $host,$userTypeID,$mail){
           return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
          }
        }
-}  
+} 
 function check_login_timeout($user_id,$token){
     $con = new Z_MySQL();
     $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
@@ -177,6 +181,17 @@ function change_password($user_id,$new_password){
    else{
       return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
    }  
+}
+function remove_user($user_id){
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
+   if($data){
+      $con->queryDML("DELETE FROM users WHERE `userID`= '$user_id'");
+      return ["token" => 0, "user_id" => 0, "error" => 0, "info" => []];
+   }
+   else{
+      return ["token" => 0, "user_id" => 0, "error" => 7, "info" => []];
+   }
 }
 function reset_password($user_id,$email){
    
