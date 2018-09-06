@@ -179,7 +179,7 @@ function userList($user_type_id)
             } 
         }
         else{
-           $data=$con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE `userTypeID` = '{$user_type_id}'")[0];
+           $data=$con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE `userTypeID` = '{$user_type_id}'");
            if($data) {
                return $data;
            }
@@ -301,7 +301,7 @@ function getMenu($user_type_id){
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `menu` WHERE  `userTypeID`= '$user_type_id'");
     if($data){
-      print_r($data);
+      return $data;
     }
     else{
       return 8;
