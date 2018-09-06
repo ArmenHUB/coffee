@@ -54,3 +54,4 @@ function device_register($device_type,$device_name,$location){
        }   
     } 
 }
+SELECT `deviceParamValues`.`text` FROM `deviceParamValues` INNER JOIN `deviceInfo` ON `deviceParamValues`.`deviceParamValueID` = `deviceInfo`.`deviceParamValueID` WHERE `deviceInfo`.`deviceID` = '1';
