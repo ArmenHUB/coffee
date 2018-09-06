@@ -294,6 +294,16 @@ function resetPassword($mail)
 
 }
 function getMenu($user_type_id){
-    
-
+    if ($user_type_id < 1 && $user_type_id > 3){
+        return 8;
+        die();
+    }
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT * FROM `menu` WHERE  `userTypeID`= '$user_type_id'");
+    if($data){
+      print_r($data);
+    }
+    else{
+      return 8;
+    }   
 }
