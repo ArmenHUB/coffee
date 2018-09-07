@@ -40,7 +40,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }
             break;
         case "user_add_edit":
-            $result = addEditUser($params->user_id, $params->username, $params->name, md5($params->password), $params->host, $params->user_type_id, $params->mail);
+            $result = addEditUser($income_data->user_id, $params->username, $params->name, md5($params->password),$income_data->host, $params->user_type_id, $params->mail);
             if($result == 0){ // correctly added or edited
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
@@ -48,7 +48,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }          
             break;
         case "user_remove":
-            $result = removeUser($params->user_id);
+            $result = removeUser($income_data->user_id);
             if($result == 0){ // correctly removed
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
@@ -56,7 +56,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }          
             break;
         case "check_password":
-            $result = checkPassword($params->user_id, md5($params->password));
+            $result = checkPassword($income_data->user_id, md5($params->password));
             if($result == 0){ // correct password
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
@@ -72,7 +72,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }            
             break;
         case "change_password":
-            $result = changePassword($params->user_id, md5($params->password));
+            $result = changePassword($income_data->user_id, md5($params->password));
             if($result == 0){ // reset password ok
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
