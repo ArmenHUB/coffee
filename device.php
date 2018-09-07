@@ -136,32 +136,41 @@ function deviceInfo($device_id)
  * @param $expiration_date
  * @return int
  */
-function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $model, $location, $expiration_date)
+function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_type_id, $location, $expiration_date)
 {
     if (gettype($device_id) != "integer") {
         return 10;
         die();
     }
-    if ($name == "" || $address == "" || $model == "" || $location == "" || $expiration_date == ""){
+    if ($name == "" || $address == "" || $device_type_id == "" || $location == "" || $expiration_date == ""){
         return 9;
         die();
     }
     $con = new Z_MySQL();
       if($device_id == 0){
-         $con->queryDML("INSERT INTO `deviceTypes` (`langID`,`text`,`image`) VALUES ('$lang_id','$model','1')");
-         $data = $con->queryNoDML("SELECT `deviceTypeID` FROM `deviceTypes` WHERE `text` = '$model'")[0];
-         if($data){
-            $deviceTypeID = $data['deviceTypeID'];
-            $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$deviceTypeID')");
-            
-            $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$address'),(NULL, '$location'),(NULL, '$expiration_date')");
-            $con->queryDML("INSERT INTO `deviceInfo` (`userID`,`deviceTypeID`) VALUES ('$user_id','$deviceTypeID')");
-
-         }
-          
+            $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$device_type_id')");
+             $data1 = $con->queryNoDML("SELECT `deviceID` FROM `deviceUsers` WHERE `userID` = '$user_id'")[0];
+             if($data1['deviceID'] > 0){
+                $deviceID = $data1['deviceID'];
+                $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$location'),(NULL, '$address'),(NULL, '$expiration_date')");
+                $data2 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceParamValues` WHERE `text` IN ('$name','$location','$address','$expiration_date')");
+                $val_id1 = $data2[0]['deviceParamValueID'];
+                $val_id2 = $data2[1]['deviceParamValueID'];
+                $val_id3 = $data2[2]['deviceParamValueID'];
+                $val_id4 = $data2[3]['deviceParamValueID'];               
+               $data3= $con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$deviceID','3','$val_id1','$device_type_id'), ('$deviceID','1','$val_id2','$device_type_id'), ('$deviceID','4','$val_id3','$device_type_id'),('$deviceID','7','$val_id4','$device_type_id')");  
+                   if($data3){
+                      return 0;
+                   }
+                   else{
+                      return 4;
+                   }              
+             }
+      }
+      else{
+         
       }
 }
-
 /**
  * @param $device_id
  * @return array|int
