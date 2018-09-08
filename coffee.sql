@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Сен 06 2018 г., 16:50
+-- Время создания: Сен 08 2018 г., 12:32
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -31,16 +31,20 @@ SET time_zone = "+00:00";
 CREATE TABLE `deviceInfo` (
   `deviceID` int(11) NOT NULL,
   `deviceParamNameID` int(11) NOT NULL,
-  `deviceParamValueID` int(11) NOT NULL
+  `deviceParamValueID` int(11) NOT NULL,
+  `deviceTypeID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `deviceInfo`
 --
 
-INSERT INTO `deviceInfo` (`deviceID`, `deviceParamNameID`, `deviceParamValueID`) VALUES
-(1, 1, 1),
-(1, 2, 2);
+INSERT INTO `deviceInfo` (`deviceID`, `deviceParamNameID`, `deviceParamValueID`, `deviceTypeID`) VALUES
+(1, 1, 1, 2),
+(1, 3, 3, 2),
+(1, 4, 4, 2),
+(1, 5, 5, 2),
+(1, 7, 7, 2);
 
 -- --------------------------------------------------------
 
@@ -60,8 +64,10 @@ CREATE TABLE `deviceParamNames` (
 
 INSERT INTO `deviceParamNames` (`deviceParamNameID`, `langID`, `text`) VALUES
 (1, 1, 'location'),
-(2, 1, 'cup'),
-(3, 1, 'name');
+(3, 1, 'name'),
+(4, 1, 'address'),
+(5, 1, 'status'),
+(7, 1, 'expiration Date');
 
 -- --------------------------------------------------------
 
@@ -79,9 +85,11 @@ CREATE TABLE `deviceParamValues` (
 --
 
 INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES
-(1, 'Erevan'),
-(2, '1275'),
-(3, 'iphone');
+(1, '56.190333'),
+(3, 'Apple3434'),
+(4, 'A.Sargsyan 20/1'),
+(5, '11'),
+(7, '2018-09-05 70:20:55');
 
 -- --------------------------------------------------------
 
@@ -101,7 +109,8 @@ CREATE TABLE `deviceTypes` (
 --
 
 INSERT INTO `deviceTypes` (`deviceTypeID`, `langID`, `text`, `image`) VALUES
-(2, 1, 'apple', '1');
+(2, 1, 'iphone', '1'),
+(5, 1, 'S8+', '1');
 
 -- --------------------------------------------------------
 
@@ -252,6 +261,13 @@ CREATE TABLE `recipeDevice` (
   `price` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `recipeDevice`
+--
+
+INSERT INTO `recipeDevice` (`recipeID`, `deviceID`, `buttonID`, `price`) VALUES
+(1, 1, 1, '300');
+
 -- --------------------------------------------------------
 
 --
@@ -333,7 +349,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userID`, `username`, `password`, `host`, `userTypeID`, `email`, `name`) VALUES
-(1, 'Armm555', 'arm876', 'coffeenew', 1, 'arm@mail.ru', 'Armen');
+(1, 'Armm555', '47d1b506e28d729c81702800e086d909', 'coffeenew', 2, 'arm@mail.ru', 'Armen'),
+(3, 'Ars12', '47d1b506e28d729c81702800e086d909', 'coffeenew', 2, 'ars@mail.ru', 'Arsen');
 
 -- --------------------------------------------------------
 
@@ -376,7 +393,7 @@ ALTER TABLE `deviceParamValues`
 -- Индексы таблицы `deviceTypes`
 --
 ALTER TABLE `deviceTypes`
-  ADD PRIMARY KEY (`deviceTypeID`,`langID`);
+  ADD PRIMARY KEY (`deviceTypeID`);
 
 --
 -- Индексы таблицы `deviceUsers`
@@ -448,6 +465,36 @@ ALTER TABLE `userTypes`
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
+
+--
+-- AUTO_INCREMENT для таблицы `deviceParamNames`
+--
+ALTER TABLE `deviceParamNames`
+  MODIFY `deviceParamNameID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT для таблицы `deviceParamValues`
+--
+ALTER TABLE `deviceParamValues`
+  MODIFY `deviceParamValueID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT для таблицы `deviceTypes`
+--
+ALTER TABLE `deviceTypes`
+  MODIFY `deviceTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT для таблицы `deviceUsers`
+--
+ALTER TABLE `deviceUsers`
+  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT для таблицы `recipeDevice`
+--
+ALTER TABLE `recipeDevice`
+  MODIFY `recipeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
