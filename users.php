@@ -86,7 +86,15 @@ if ($is_logged_normaly || $params->command === "login") {
             } else {
                 $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
-            break;            
+            break;
+        case "user_info":
+            $result = userInfo($income_data->user_id);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }            
+        break;                
     }
 }
 if ($answer['error'] > 0) {
@@ -360,4 +368,22 @@ function getMenu($user_type_id){
         }         
     }
  
+}
+/**
+ * @param $user_id
+ * @return array|int
+ */
+function userInfo($user_id){
+    if (gettype($user_id) != "integer") {
+        return 7;
+        die();
+    }
+    $con = new Z_MySQL(); 
+    $data = $con->queryNoDML("SELECT `name`,`host`,`email` FROM `users` WHERE  `userID`= '$user_id'")[0];
+    if($data){
+       return $data;
+    }  
+    else{
+       return 7;
+    }
 }
