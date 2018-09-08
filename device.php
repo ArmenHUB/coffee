@@ -3,75 +3,75 @@ require_once "z_config.php";
 require_once "z_mysql.php";
 require_once "errors.php";
 //get send data //
-// $all_data = file_get_contents('php://input');
-// $income_data = json_decode($all_data);
+$all_data = file_get_contents('php://input');
+$income_data = json_decode($all_data);
 
-// $answer = $income_data;
-// $params = $income_data->params;
+$answer = $income_data;
+$params = $income_data->params;
 
-// switch ($params->command) {
-//     case "device_list":
-//         $result = getDeviceList($params->owner_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_info":
-//         $result = deviceInfo($params->device_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_add_edit":
-//         $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->name, $params->address, $params->model, $params->location, $params->expiration_date);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
-//     case "device_list_status_expiration":
-//         $result = deviceListStatusExpiration($params->owner_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_remove":
-//         $result = removeDevice($params->device_id);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
-//     case "device_recipe_add":
-//         $result = addEditDeviceRecipe($params->device_id, $params->button_id, $params->price, $params->recipe_id);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
+switch ($params->command) {
+    case "device_list":
+        $result = getDeviceList($params->owner_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_info":
+        $result = deviceInfo($params->device_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_add_edit":
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->name, $params->address, $params->model, $params->location, $params->expiration_date);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
+    case "device_list_status_expiration":
+        $result = deviceListStatusExpiration($params->owner_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_remove":
+        $result = removeDevice($params->device_id);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
+    case "device_recipe_add":
+        $result = addEditDeviceRecipe($params->device_id, $params->button_id, $params->price, $params->recipe_id);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
 
-//     case "get_recipe_by_device_button_id":
-//         $result = getRecipeByDeviceButtonId($params->device_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-// }
-// if ($answer['error'] > 0) {
-//     $answer['error'] = getError($answer['error'], $income_data->lang_id);
-// }
-// echo json_encode($answer);
+    case "get_recipe_by_device_button_id":
+        $result = getRecipeByDeviceButtonId($params->device_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+}
+if ($answer['error'] > 0) {
+    $answer['error'] = getError($answer['error'], $income_data->lang_id);
+}
+echo json_encode($answer);
 
 /**
  * @param $owner_id
@@ -168,7 +168,22 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
              }
       }
       else{
-         
+         $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'"); 
+         if($data){
+            $data1 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'");
+            $status = '1';
+            $array_values = array($location,$name,$address,$status,$expiration_date);
+            $i = 0;
+             foreach ($data1 as $key => $value) {
+                 $device_param_value_id = $value['deviceParamValueID'];
+                 $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$device_param_value_id'");
+                 $i++;
+             }
+             return 0;
+         }
+         else{
+            return 4;
+         }
       }
 }
 /**
@@ -195,8 +210,21 @@ function removeDevice($device_id)
 {
     if (gettype($device_id) != "integer") {
         return 10;
+        die();
     }
-    return 0;
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE  `deviceID`= '$device_id'");
+    if($data){
+       $con->queryDML("DELETE FROM `deviceInfo` WHERE `deviceID`= '$device_id'");
+       foreach ($data as $key => $value) {
+          $device_param_value_id = $value['deviceParamValueID'];
+          $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");
+          return 0;
+       }          
+    }
+    else{
+        return 7;
+    }
 }
 
 /**
@@ -210,13 +238,32 @@ function addEditDeviceRecipe($device_id, $button_id, $price, $recipe_id)
 {
     if (gettype($device_id) != "integer" || gettype($button_id) != "integer" || gettype($recipe_id) != "integer") {
         return 10;
+        die();
     }
     if ($price == "") {
         return 9;
+        die();
     }
-    return 0;
+    $con = new Z_MySQL();
+    if($recipe_id == 0){
+      $data=$con->queryDML("INSERT INTO `recipeDevice` (`recipeID`,`deviceID`,`buttonID`,`price`) VALUES (NULL,'$device_id','$button_id',' $price')");
+      if($data){
+         return 0;
+      }
+      else{
+         return 4;
+      }
+    }
+    else{
+      $data=$con->queryDML("UPDATE `recipeDevice` SET `deviceID` = '$device_id', `buttonID` = '$button_id', `price` = '$price' WHERE `recipeID` = '$recipe_id'");
+      if($data){
+         return 0;
+      }
+      else{
+         return 4;
+      }
+    }
 }
-
 /**
  * @param $device_id
  * @return array|int
@@ -225,6 +272,14 @@ function getRecipeByDeviceButtonId($device_id)
 {
     if (gettype($device_id) != "integer") {
         return 10;
+        die();
     }
-    return ["price" => "150", "button_id" => "1", "recipe_id" => "3"];
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT `recipeID`,`buttonID`,`price` FROM `recipeDevice` WHERE `deviceID` = '$device_id'")[0];
+    if($data){
+        return $data;
+    }
+    else{
+       return 7;
+    }
 }
