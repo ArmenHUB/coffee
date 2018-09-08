@@ -216,17 +216,17 @@ function removeDevice($device_id)
     $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE  `deviceID`= '$device_id'");
     if($data){
        $con->queryDML("DELETE FROM `deviceInfo` WHERE `deviceID`= '$device_id'");
+       $con->queryDML("DELETE FROM `deviceUsers` WHERE `deviceID`= '$device_id'"); 
        foreach ($data as $key => $value) {
           $device_param_value_id = $value['deviceParamValueID'];
-          $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");
-          return 0;
-       }          
+          $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");      
+       }
+      return 0;           
     }
     else{
         return 7;
     }
 }
-
 /**
  * @param $device_id
  * @param $button_id
