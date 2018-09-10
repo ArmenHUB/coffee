@@ -238,8 +238,9 @@ function addEditUser($user_id, $username, $name, $password, $host, $user_type_id
            if($data1['userID'] > 0){
               return 4;
            }
-           else{              
-               $data=$con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password','$host','$user_type_id','$mail','$name')");
+           else{
+               $password_random = createToken();              
+               $data=$con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
                if($data){
                  return 0;
                }
