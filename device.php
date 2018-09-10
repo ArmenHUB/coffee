@@ -207,7 +207,8 @@ function deviceListStatusExpiration($owner_id)
     }
     $con = new Z_MySQL();
     if($owner_id == 0){
-       $data = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`boards`.`expiration date` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` WHERE `users`.`userTypeID` = '2'");
+       // $data = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`boards`.`expiration date` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` WHERE `users`.`userTypeID` = '2'");
+       $data = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`deviceParamValues`.`text` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceInfo` ON `deviceInfo`.`deviceID` = `deviceUsers`.`deviceID` INNER JOIN `deviceParamValues` ON `deviceParamValues`.`deviceParamValueID` = `deviceInfo`.`deviceParamValueID` WHERE `users`.`userTypeID` = '2' AND `deviceInfo`.`deviceParamNameID` = '7'");        
        if($data){
          return $data;
        }
