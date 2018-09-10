@@ -199,16 +199,31 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
  * @param $device_id
  * @return array|int
  */
-function deviceListStatusExpiration($device_id)
+function deviceListStatusExpiration($owner_id)
 {
     if (gettype($device_id) != "integer") {
         return 10;
+        die();
     }
-    return [
-        ["serial_number" => ["1258", "4599", "4777", "6577"], "last_activity" => "2018-09-05 10:20:10", "UID" => "123456789012345678901234", "owner" => "Owner name 1", "expiration_date" => "10.11.18", "status" => "0"],
-        ["serial_number" => ["9852", "4568", "2356", "7452"], "last_activity" => "2018-09-06 20:59:51", "UID" => "159753951456852456852125", "owner" => "Owner name 2", "expiration_date" => "10.11.18", "status" => "1"],
-        ["serial_number" => ["9852", "4568", "2356", "7452"], "last_activity" => "2018-09-06 20:59:51", "UID" => "952684265893257145885312", "owner" => "Owner name 3", "expiration_date" => "10.12.18", "status" => "2"]
-    ];
+    $con = new Z_MySQL();
+    if($owner_id == 0){
+       $data = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`boards`.`expiration date` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` WHERE `users`.`userTypeID` = '2'");
+       if($data){
+         return $data;
+       }
+       else{
+         return 7;
+       }   
+    }
+    else{
+       $data = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`boards`.`expiration date` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` WHERE `users`.`userTypeID` = '2' AND `users`.`userID` = '$owner_id'");
+       if($data){
+         return $data;
+       }
+       else{
+         return 7;
+       }
+    }
 }
 /**
  * @param $device_id
@@ -242,10 +257,10 @@ function removeDevice($device_id)
  * @param $recipe_id
  * @return int
  */
-//????????????????????????????????????????????????????????????????????????
+
 function addEditDeviceRecipe($device_id, $button_id, $price, $recipe_id)
 {
-    if (gettype($device_id) != "integer" || gettype($button_id) != "integer" || gettype($recipe_id) != "integer") {
+    if (gettype($device_id) != "integer" || gettype($button_id) != "integer" || gettype($recipe_id) != "integer" || $recipe_id == "0" || $device_id == "0") {
         return 10;
         die();
     }
@@ -253,24 +268,31 @@ function addEditDeviceRecipe($device_id, $button_id, $price, $recipe_id)
         return 9;
         die();
     }
-    $con = new Z_MySQL();
-    if($recipe_id == 0){
-      $data=$con->queryDML("INSERT INTO `recipeDevice` (`recipeID`,`deviceID`,`buttonID`,`price`) VALUES (NULL,'$device_id','$button_id',' $price')");
-      if($data){
-         return 0;
-      }
-      else{
-         return 4;
-      }
+      $con = new Z_MySQL();
+    // if($recipe_id == 0){
+    //   $data=$con->queryDML("INSERT INTO `recipeDevice` (`recipeID`,`deviceID`,`buttonID`,`price`) VALUES (NULL,'$device_id','$button_id',' $price')");
+    //   if($data){
+    //      return 0;
+    //   }
+    //   else{
+    //      return 4;
+    //   }
+    // }
+    // else{
+    //   $data=$con->queryDML("UPDATE `recipeDevice` SET `deviceID` = '$device_id', `buttonID` = '$button_id', `price` = '$price' WHERE `recipeID` = '$recipe_id'");
+    //   if($data){
+    //      return 0;
+    //   }
+    //   else{
+    //      return 4;
+    //   }
+    // }
+    $data = $con->queryDML("INSERT INTO `recipeDevice` (`recipeID`,`deviceID`,`buttonID`,`price`) VALUES ('$recipe_id','$device_id','$button_id','$price') ON DUPLICATE KEY UPDATE `recipeID` = '$recipe_id', `buttonID` = '$button_id',`price` = '$price'");
+    if($data){
+        return 0;
     }
     else{
-      $data=$con->queryDML("UPDATE `recipeDevice` SET `deviceID` = '$device_id', `buttonID` = '$button_id', `price` = '$price' WHERE `recipeID` = '$recipe_id'");
-      if($data){
-         return 0;
-      }
-      else{
-         return 4;
-      }
+        return 4;
     }
 }
 /**
