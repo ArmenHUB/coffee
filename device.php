@@ -153,13 +153,22 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
              if($data1['deviceID'] > 0){
                 $deviceID = $data1['deviceID'];
                 $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$location'),(NULL, '$address'),(NULL, '$expiration_date')");
+
                 $data2 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceParamValues` WHERE `text` IN ('$name','$location','$address','$expiration_date')");
+                // DeviceParamValues
                 $val_id1 = $data2[0]['deviceParamValueID'];
                 $val_id2 = $data2[1]['deviceParamValueID'];
                 $val_id3 = $data2[2]['deviceParamValueID'];
-                $val_id4 = $data2[3]['deviceParamValueID'];               
-               $data3= $con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$deviceID','3','$val_id1','$device_type_id'), ('$deviceID','1','$val_id2','$device_type_id'), ('$deviceID','4','$val_id3','$device_type_id'),('$deviceID','7','$val_id4','$device_type_id')");  
-                   if($data3){
+                $val_id4 = $data2[3]['deviceParamValueID'];
+
+                $data3 = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` IN ('name','location','address','expiration Date')");
+                // DeviceParamNames
+                $name_id1 = $data3[0]['deviceParamNameID'];// location
+                $name_id2 = $data3[1]['deviceParamNameID'];// name
+                $name_id3 = $data3[2]['deviceParamNameID'];// address              
+                $name_id4 = $data3[3]['deviceParamNameID'];// expiration date  
+               $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$deviceID','$name_id2','$val_id1','$device_type_id'), ('$deviceID','$name_id1','$val_id2','$device_type_id'), ('$deviceID','$name_id3','$val_id3','$device_type_id'),('$deviceID','$name_id4','$val_id4','$device_type_id')");  
+                   if($data4){
                       return 0;
                    }
                    else{
@@ -198,10 +207,9 @@ function deviceListStatusExpiration($device_id)
     return [
         ["serial_number" => ["1258", "4599", "4777", "6577"], "last_activity" => "2018-09-05 10:20:10", "UID" => "123456789012345678901234", "owner" => "Owner name 1", "expiration_date" => "10.11.18", "status" => "0"],
         ["serial_number" => ["9852", "4568", "2356", "7452"], "last_activity" => "2018-09-06 20:59:51", "UID" => "159753951456852456852125", "owner" => "Owner name 2", "expiration_date" => "10.11.18", "status" => "1"],
-        ["serial_number" => ["9852", "4568", "2356", "7452"], "last_activity" => "2018-09-06 20:59:51", "UID" => "952684265893257145885312", "owner" => "Owner name 2", "expiration_date" => "10.12.18", "status" => "2"]
+        ["serial_number" => ["9852", "4568", "2356", "7452"], "last_activity" => "2018-09-06 20:59:51", "UID" => "952684265893257145885312", "owner" => "Owner name 3", "expiration_date" => "10.12.18", "status" => "2"]
     ];
 }
-
 /**
  * @param $device_id
  * @return int
@@ -234,6 +242,7 @@ function removeDevice($device_id)
  * @param $recipe_id
  * @return int
  */
+//????????????????????????????????????????????????????????????????????????
 function addEditDeviceRecipe($device_id, $button_id, $price, $recipe_id)
 {
     if (gettype($device_id) != "integer" || gettype($button_id) != "integer" || gettype($recipe_id) != "integer") {
