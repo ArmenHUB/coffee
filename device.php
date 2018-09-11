@@ -86,22 +86,25 @@ function getDeviceList($owner_id)
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$owner_id'")[0];
     if($data['userTypeID'] == 2){
-       $data1 = $con->queryNoDML("SELECT `deviceID` FROM deviceUsers WHERE `userID` = '$owner_id'")[0];
-       if($data1['deviceID'] > 0){
-          $device_id = $data1['deviceID'];
-          $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamValues`.`text` AS DeviceName FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` WHERE  `deviceInfo`.`deviceID` = '$device_id' AND `deviceParamNames`.`text` = 'name'");
-          if($data2){
-            return $data2;
-          }
-       }
-       else{
-         return 7;
-       }
+       $data1 = $con->queryNoDML("SELECT `deviceID` FROM deviceUsers WHERE `userID` = '$owner_id'");
+       if($data1){
+         foreach ($data1 as $key => $value) {
+             $device_id = $value['deviceID'];
+                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamValues`.`text` AS DeviceInfo,`deviceTypes`.`text` AS Model FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`text`IN ('name','address','sum','status') AND `deviceInfo`.`deviceID` = '$device_id'");
+                   if($data2){
+                        return  $data2;
+                    }
+                   else{
+                        return 7;
+                    }
+         }
     }
     else{
         return 7;
     }
 }
+}
+
 /**
  * @param $device_id
  * @return array|int
