@@ -201,6 +201,21 @@ function removeVmType($vm_type_id)
 {
     if (gettype($vm_type_id) != "integer") {
         return 11;
+        die();
     }
-    return 0;
+    $con = new Z_MySQL();
+    $data=$con->queryDML("DELETE FROM `vm_types` WHERE `vm_type_id` = '$vm_type_id'");
+    if($data){
+        $data1 = $con->queryNoDML("SELECT `ingredientsID` FROM `vm_type_ingredients` WHERE `vm_type_id` = '$vm_type_id'");
+        $con->queryDML("DELETE FROM `vm_type_ingredients` WHERE `vm_type_id` = '$vm_type_id'"); 
+         foreach ($data1 as $key => $value) {
+            $ingredient_id= $value['ingredientsID'];
+            $con->queryDML("DELETE FROM `ingredients` WHERE `ingredientsID` = '$ingredient_id'");          
+        }
+        return 0;        
+    }
+    else{
+        return 11;
+    }
+
 }
