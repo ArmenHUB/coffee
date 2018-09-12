@@ -8,7 +8,12 @@ require_once "be_mail.php";
 $all_data = file_get_contents('php://input');
 $income_data = json_decode($all_data);
 $params = $income_data->params;
-
+$is_logged_normaly = false;
+$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+if (checkUser($income_data->user_id, $income_data->token)) {
+    $is_logged_normaly = true;
+}
+if ($is_logged_normaly) {
     switch ($params->command) {
         case "board_add":
             $result = addBoard($params->UID);
@@ -35,7 +40,30 @@ $params = $income_data->params;
             } 
             break;
     }
+}    
 echo json_encode($answer);
+/**
+ * @param $user_id
+ * @param $token
+ * @return bool
+ */
+function checkUser($user_id, $token)
+{
+    $con = new Z_MySQL();
+    $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
+    $answer = $con->queryNoDML("SELECT `loggedUsers`.`lastAction` AS 'lastAction' FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id} AND `loggedUsers`.`token` = '{$token}'")[0]["lastAction"];
+    $cur_date = new DateTime($cur_time);
+    $last_date = new DateTime($answer);
+    if ($answer != "") {
+        if ($last_date->getTimestamp() + LOG_OFF_DELAY > $cur_date->getTimestamp() || LOG_OFF_DELAY === 0) {
+            $con->queryDML("UPDATE `loggedUsers` SET `lastAction`='{$cur_time}' WHERE `loggedUsers`.`userID` = {$user_id}");
+            return true;
+        } else {
+            $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
+        }
+    }
+    return false;
+}
 /**
  * @param $UID
  * @return array|int
