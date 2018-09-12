@@ -8,8 +8,14 @@ $income_data = json_decode($all_data);
 
 $answer = $income_data;
 $params = $income_data->params;
-
+$is_logged_normaly = false;
+$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+if (checkUser($income_data->user_id, $income_data->token)) {
+    $is_logged_normaly = true;
+}
+if ($is_logged_normaly) {
 switch ($params->command) {
+
     case "device_list":
         $result = getDeviceList($params->owner_id);
         if (gettype($result) == 'integer') { // return error number
@@ -68,11 +74,34 @@ switch ($params->command) {
         }
         break;
 }
+}
 if ($answer['error'] > 0) {
     $answer['error'] = getError($answer['error'], $income_data->lang_id);
 }
 echo json_encode($answer);
 
+/**
+ * @param $user_id
+ * @param $token
+ * @return bool
+ */
+function checkUser($user_id, $token)
+{
+    $con = new Z_MySQL();
+    $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
+    $answer = $con->queryNoDML("SELECT `loggedUsers`.`lastAction` AS 'lastAction' FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id} AND `loggedUsers`.`token` = '{$token}'")[0]["lastAction"];
+    $cur_date = new DateTime($cur_time);
+    $last_date = new DateTime($answer);
+    if ($answer != "") {
+        if ($last_date->getTimestamp() + LOG_OFF_DELAY > $cur_date->getTimestamp() || LOG_OFF_DELAY === 0) {
+            $con->queryDML("UPDATE `loggedUsers` SET `lastAction`='{$cur_time}' WHERE `loggedUsers`.`userID` = {$user_id}");
+            return true;
+        } else {
+            $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
+        }
+    }
+    return false;
+}
 /**
  * @param $owner_id
  * @return array|int
