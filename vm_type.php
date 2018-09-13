@@ -5,54 +5,76 @@ require_once "errors.php";
 require_once "be_mail.php";
 
 //get send data //
-// $all_data = file_get_contents('php://input');
-// $income_data = json_decode($all_data);
-// $params = $income_data->params;
-// $is_logged_normaly = true;
-/*$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+ $all_data = file_get_contents('php://input');
+ $income_data = json_decode($all_data);
+ $params = $income_data->params;
+ $is_logged_normaly = true;
+ $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
 if (checkUser($income_data->user_id, $income_data->token)) {
     $is_logged_normaly = true;
-}*/
-// if ($is_logged_normaly || $params->command === "login") {
-//     switch ($params->command) {
-//         case "vm_type_list":
-//             $result = vmTypesList();
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "vm_type_info":
-//             $result = vmTypeInfo($params->vm_type_id);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "vm_type_add_edit":
-//             $result = addEditVmType($params->vm_type_id, $params->name, $params->image, $params->button_count, $params->ingr_list);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "vm_type_remove":
-//             $result = removeVmType($params->vm_type_id);
-//             if ($result == 0) { // reset password ok
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//     }
-// }
-// if ($answer['error'] > 0) {
-//     $answer['error'] = errorGet($answer['error'], $income_data->lang_id);
-// }
-// echo json_encode($answer);
+}
+if ($is_logged_normaly) {
+     switch ($params->command) {
+         case "vm_type_list":
+             $result = vmTypesList();
+             if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+             } else {
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+             break;
+         case "vm_type_info":
+             $result = vmTypeInfo($params->vm_type_id);
+             if (gettype($result) == 'integer') { // return error number
+                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+             } else {
+                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+             }
+             break;
+         case "vm_type_add_edit":
+             $result = addEditVmType($params->vm_type_id, $params->name, $params->image, $params->button_count, $params->ingr_list);
+             if (gettype($result) == 'integer') { // return error number
+                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+             } else {
+                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+             }
+             break;
+         case "vm_type_remove":
+             $result = removeVmType($params->vm_type_id);
+             if ($result == 0) { // reset password ok
+                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+             } else { // returned error number
+                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+             }
+             break;
+     }
+ }
+ if ($answer['error'] > 0) {
+     $answer['error'] = errorGet($answer['error'], $income_data->lang_id);
+ }
+ echo json_encode($answer);
+ /**
+ * @param $user_id
+ * @param $token
+ * @return bool
+ */
+function checkUser($user_id, $token)
+{
+    $con = new Z_MySQL();
+    $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
+    $answer = $con->queryNoDML("SELECT `loggedUsers`.`lastAction` AS 'lastAction' FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id} AND `loggedUsers`.`token` = '{$token}'")[0]["lastAction"];
+    $cur_date = new DateTime($cur_time);
+    $last_date = new DateTime($answer);
+    if ($answer != "") {
+        if ($last_date->getTimestamp() + LOG_OFF_DELAY > $cur_date->getTimestamp() || LOG_OFF_DELAY === 0) {
+            $con->queryDML("UPDATE `loggedUsers` SET `lastAction`='{$cur_time}' WHERE `loggedUsers`.`userID` = {$user_id}");
+            return true;
+        } else {
+            $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
+        }
+    }
+    return false;
+}
 /**
  * @return array
  */
@@ -139,7 +161,6 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
             $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
             $ingredient_name_id=  $data_ing['ingredientsNameID'];
             $con->queryDML("INSERT INTO `ingredients` (`ingredientsID`,`ingredientNameID`,`unitVending`,`unitCollector`) VALUES (NULL,'$ingredient_name_id','$unitVending','$unitCollector')"); 
-
          }
           $con->queryDML("INSERT INTO `vm_types` (`vm_type_id`,`name`,`button_count`,`image`) VALUES (NULL,'$name','$button_count','$image')");
           $data = $con->queryNoDML("SELECT `vm_type_id` FROM `vm_types` WHERE `name`= '$name' AND `button_count`='$button_count' AND `image`='$image'")[0];
@@ -169,28 +190,31 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
     }
     else{
 
-        // $data = $con->queryDML("UPDATE `vm_types` SET `name` = '$name',`button_count` = '$button_count',`image`='$image' WHERE `vm_type_id` = '$vm_type_id'");
-        // if($data){
-        //      $data1 = $con->queryNoDML("SELECT `ingredientsID` FROM `vm_type_ingredients`  WHERE `vm_type_id` = '$vm_type_id'");
-        //      foreach ($data1 as $key => $value) {
-        //         $ingredient_id= $value['ingredientsID'];
-        //        foreach ($ingr_list as $key => $value) {
-        //             $ingredient_name = $value[0];
-        //             $unitVending = $value[1];
-        //             $unitCollector = $value[2];
-        //             $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
-        //             $ingredient_name_id=  $data_ing['ingredientsNameID'];                    
-        //         }
-
-                 
-        //      }
-        // }
-        // else{
-        //     return 9;
-        // }    
+        $data = $con->queryDML("UPDATE `vm_types` SET `name` = '$name',`button_count` = '$button_count',`image`='$image' WHERE `vm_type_id` = '$vm_type_id'");
+        if($data){
+             $data1 = $con->queryNoDML("SELECT `ingredientsID` FROM `vm_type_ingredients`  WHERE `vm_type_id` = '$vm_type_id'");
+             foreach ($data1 as $key1 => $value) {
+                $ingredient_id= $value['ingredientsID'];
+                foreach ($ingr_list as $key2 => $value) {
+                  if($key1 == $key2){
+                     $ingredient_name = $value[0];
+                     $unitVending = $value[1];
+                     $unitCollector = $value[2];
+                     $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
+                     $ingredient_name_id=  $data_ing['ingredientsNameID'];
+                     $data = $con->queryDML("UPDATE `ingredients` SET `ingredientNameID` = '$ingredient_name_id',`unitVending` = '$unitVending',`unitCollector`='$unitCollector' WHERE `ingredientsID` = '$ingredient_id'");
+                  }                   
+                }               
+             }
+              return 0;
+        }
+        else{
+            return 9;
+        }    
     }   
 }
-//$ingr_list = array('0' => array("Coffee","300g","100kg"),'1'=> array("Sugar","320g","120kg"),'2' => array("Cup","330g","130kg"));
+// $ingr_list = array('0' => array("Cup","400g","400kg"),'1'=> array("Coffee","500g","500kg"),'2' => array("Sugar","600g","600kg"));
+// echo addEditVmType(4, 'VM-22_22', "vm22.jpeg", "22", $ingr_list);
 
 
 /**
