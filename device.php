@@ -33,7 +33,8 @@ switch ($params->command) {
         }
         break;
     case "device_add_edit":
-        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->name, $params->address, $params->model, $params->location, $params->expiration_date);
+        $data = $params->data;
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date);
         if ($result == 0) { // reset password ok
             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         } else { // returned error number
@@ -261,7 +262,6 @@ function deviceListStatusExpiration($owner_id)
        }
     }
 }
-deviceListStatusExpiration(0);
 /**
  * @param $device_id
  * @return int
