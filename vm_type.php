@@ -152,6 +152,7 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
         return 9;
         die();
     }
+  
    $con = new Z_MySQL();
     if($vm_type_id == 0){
          foreach ($ingr_list as $key => $value) {
@@ -161,9 +162,10 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
             $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
             $ingredient_name_id=  $data_ing['ingredientsNameID'];
             $con->queryDML("INSERT INTO `ingredients` (`ingredientsID`,`ingredientNameID`,`unitVending`,`unitCollector`) VALUES (NULL,'$ingredient_name_id','$unitVending','$unitCollector')"); 
-         }
-          $con->queryDML("INSERT INTO `vm_types` (`vm_type_id`,`name`,`button_count`,`image`) VALUES (NULL,'$name','$button_count','$image')");
-          $data = $con->queryNoDML("SELECT `vm_type_id` FROM `vm_types` WHERE `name`= '$name' AND `button_count`='$button_count' AND `image`='$image'")[0];
+         }       
+          $image_uploaded = file_upload($image);
+          $con->queryDML("INSERT INTO `vm_types` (`vm_type_id`,`name`,`button_count`,`image`) VALUES (NULL,'$name','$button_count','$image_uploaded')");
+          $data = $con->queryNoDML("SELECT `vm_type_id` FROM `vm_types` WHERE `name`= '$name' AND `button_count`='$button_count' AND `image`='$image_uploaded'")[0];
            if($data['vm_type_id'] > 0){
                 foreach ($ingr_list as $key => $value) {
                     $vm_type_id = $data['vm_type_id'];
@@ -213,10 +215,8 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
         }    
     }   
 }
-// $ingr_list = array('0' => array("Cup","400g","400kg"),'1'=> array("Coffee","500g","500kg"),'2' => array("Sugar","600g","600kg"));
-// echo addEditVmType(4, 'VM-22_22', "vm22.jpeg", "22", $ingr_list);
-
-
+// $ingr_list = array('0' => array("Sugar","70g","70kg"),'1'=> array("Cup","70g","80kg"),'2' => array("Coffee","70g","90kg"));
+// echo addEditVmType(0, 'VM-33', "vm33.jpeg", "33", $ingr_list);
 /**
  * @param $vm_type_id
  * @return int
@@ -242,4 +242,34 @@ function removeVmType($vm_type_id)
         return 11;
     }
 
+}
+
+function file_upload($image){
+    if($_FILES['file_upload']['error'] > 0){
+       return 'An error ocurred when uploading.';
+    }
+
+    if(!getimagesize($_FILES['file_upload']['tmp_name'])){
+      return 'Please ensure you are uploading an image.';
+     }
+
+        // Check filetype
+   if($_FILES['file_upload']['type'] == 'image/png' || $_FILES['file_upload']['type'] == 'image/jpg' || $_FILES['file_upload']['type'] == 'image/jpeg' || $_FILES['file_upload']['type'] == 'image/gif'){
+        // Check filesize
+        if($_FILES['file_upload']['size'] > 5000000){
+          return 'File uploaded exceeds maximum upload size.';
+        }
+       // Check if the file exists
+       if(file_exists('image/' . $_FILES['file_upload']['name'])){
+         return 'File with that name already exists.';
+       }
+       // Upload file
+      if(!move_uploaded_file($_FILES['file_upload']['tmp_name'], 'images/' . $_FILES['file_upload']['name'])){
+        return 'Error uploading file - check destination is writeable.';
+      }
+        return  $_FILES['file_upload']['name'];
+   }
+   else{
+        return 'Unsupported filetype uploaded.';
+   }
 }
