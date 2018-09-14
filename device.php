@@ -21,7 +21,7 @@ switch ($params->command) {
         if (gettype($result) == 'integer') { // return error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         } else {
-            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         }
         break;
     case "device_info":
@@ -29,12 +29,12 @@ switch ($params->command) {
         if (gettype($result) == 'integer') { // return error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         } else {
-            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         }
         break;
     case "device_add_edit":
         $data = $params->data;
-        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date);
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date,$data->serial_number);
         if ($result == 0) { // reset password ok
             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         } else { // returned error number
@@ -46,7 +46,7 @@ switch ($params->command) {
         if (gettype($result) == 'integer') { // return error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         } else {
-            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         }
         break;
     case "device_remove":
@@ -71,7 +71,7 @@ switch ($params->command) {
         if (gettype($result) == 'integer') { // return error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         } else {
-            $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         }
         break;
 }
@@ -120,9 +120,10 @@ function getDeviceList($owner_id)
        if($data1){
          foreach ($data1 as $key => $value) {
              $device_id = $value['deviceID'];
-                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamValues`.`text` AS DeviceInfo,`deviceTypes`.`text` AS Model FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`text`IN ('name','address','sum','status') AND `deviceInfo`.`deviceID` = '$device_id'");
+                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamValues`.`text` AS DeviceInfo,`deviceTypes`.`text` AS Model,`deviceTypes`.`deviceTypeID` AS DeviceTypeID FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`text`IN ('name','address','sum','status','location','map_icon') AND `deviceInfo`.`deviceID` = '$device_id'");
                    if($data2){
-                        return  $data2;
+                         return  $data2;
+                       //print_r($data2);
                     }
                    else{
                         return 7;
@@ -134,7 +135,7 @@ function getDeviceList($owner_id)
     }
 }
 }
-
+ //getDeviceList(1);
 /**
  * @param $device_id
  * @return array|int
@@ -169,7 +170,7 @@ function deviceInfo($device_id)
  * @param $expiration_date
  * @return int
  */
-function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_type_id, $location, $expiration_date)
+function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_type_id, $location, $expiration_date,$serial_number)
 {
     if (gettype($device_id) != "integer") {
         return 10;
@@ -185,6 +186,11 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
              $data1 = $con->queryNoDML("SELECT `deviceID` FROM `deviceUsers` WHERE `userID` = '$user_id'")[0];
              if($data1['deviceID'] > 0){
                 $deviceID = $data1['deviceID'];
+                 // Add boardDevice
+                 $data_board = $con->queryNoDML("SELECT `boardID` FROM `boards` WHERE `serialNumber` = '$serial_number'")[0];
+                 $board_id = $data_board['boardID'];
+                 $con->queryDML("INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES ('$deviceID', '$board_id')");
+
                 $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$location'),(NULL, '$address'),(NULL, '$expiration_date')");
 
                 $data2 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceParamValues` WHERE `text` IN ('$name','$location','$address','$expiration_date')");
