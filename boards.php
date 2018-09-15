@@ -20,7 +20,7 @@ if ($is_logged_normaly) {
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $result["token"], "user_id" =>  $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "check_serial_number":
