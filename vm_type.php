@@ -8,7 +8,7 @@ require_once "be_mail.php";
  $all_data = file_get_contents('php://input');
  $income_data = json_decode($all_data);
  $params = $income_data->params;
- $is_logged_normaly = true;
+ $is_logged_normaly = false;
  $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
 if (checkUser($income_data->user_id, $income_data->token)) {
     $is_logged_normaly = true;
@@ -137,9 +137,10 @@ function vmTypeInfo($vm_type_id)
  * @param $name
  * @param $image
  * @param $button_count
- * @param $ingr_list
+ * @param $ingr_list 
  * @return int
  */
+
 /*function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)*/
 //$ingr_list = array('0' => array("Cofee","10g","20kg"),'1'=> array("Sugar","12g","21kg"));
 function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
@@ -160,7 +161,7 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
             $unitVending = $value[1];
             $unitCollector = $value[2];
             $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
-            $ingredient_name_id=  $data_ing['ingredientsNameID'];
+            $ingredient_name_id=$data_ing['ingredientsNameID'];
             $con->queryDML("INSERT INTO `ingredients` (`ingredientsID`,`ingredientNameID`,`unitVending`,`unitCollector`) VALUES (NULL,'$ingredient_name_id','$unitVending','$unitCollector')"); 
          }       
           $image_uploaded = file_upload($image);
@@ -184,14 +185,13 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
 
                    }                   
                 }
-                   return 0;
+                  return 0;
            }
            else{
              return 9;
            }
     }
     else{
-
         $data = $con->queryDML("UPDATE `vm_types` SET `name` = '$name',`button_count` = '$button_count',`image`='$image' WHERE `vm_type_id` = '$vm_type_id'");
         if($data){
              $data1 = $con->queryNoDML("SELECT `ingredientsID` FROM `vm_type_ingredients`  WHERE `vm_type_id` = '$vm_type_id'");
@@ -202,21 +202,21 @@ function addEditVmType($vm_type_id, $name, $image, $button_count, $ingr_list)
                      $ingredient_name = $value[0];
                      $unitVending = $value[1];
                      $unitCollector = $value[2];
-                     $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];
-                     $ingredient_name_id=  $data_ing['ingredientsNameID'];
+                     $data_ing = $con->queryNoDML("SELECT `ingredientsNameID` FROM `ingredientsName` WHERE `text`= '$ingredient_name'")[0];                     
+                     $ingredient_name_id = $data_ing['ingredientsNameID'];
                      $data = $con->queryDML("UPDATE `ingredients` SET `ingredientNameID` = '$ingredient_name_id',`unitVending` = '$unitVending',`unitCollector`='$unitCollector' WHERE `ingredientsID` = '$ingredient_id'");
                   }                   
                 }               
              }
-              return 0;
+            return 0;
         }
         else{
             return 9;
         }    
     }   
 }
-// $ingr_list = array('0' => array("Sugar","70g","70kg"),'1'=> array("Cup","70g","80kg"),'2' => array("Coffee","70g","90kg"));
-// echo addEditVmType(0, 'VM-33', "vm33.jpeg", "33", $ingr_list);
+ // $ingr_list = array('0' => array("Sugar","70g","70kg"),'1'=> array("Cup","70g","80kg"),'2' => array("Coffee","70g","90kg"));
+ // echo addEditVmType(0, 'VM-33', "vm33.jpeg", "33", $ingr_list);
 /**
  * @param $vm_type_id
  * @return int
@@ -268,6 +268,7 @@ function file_upload($image){
         return 'Error uploading file - check destination is writeable.';
       }
         return  $_FILES['file_upload']['name'];
+        
    }
    else{
         return 'Unsupported filetype uploaded.';
