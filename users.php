@@ -406,5 +406,11 @@ function userInfo($user_id){
         die();
     } 
     $con = new Z_MySQL(); 
-    //$data 
+    $data =  $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
+    if($data){
+       return $data;
+    }
+    else{
+        return 8;
+    }
  }
