@@ -16,7 +16,7 @@ if (checkUser($income_data->user_id, $income_data->token)) {
 if ($is_logged_normaly || $params->command === "login") {
     switch ($params->command) {
         case "login":
-            $result = login($params->username, md5($params->password), $params->host);
+            $result = login($params->username, md5($params->password), $income_data->host);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else { // return correct answer - array
@@ -84,7 +84,7 @@ if ($is_logged_normaly || $params->command === "login") {
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "user_info":
@@ -92,7 +92,15 @@ if ($is_logged_normaly || $params->command === "login") {
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" => $result["token"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $result["token"], "user_id" =>  $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }            
+        break;
+        case "collector_list":
+            $result = collectorList($params->user_type_id,$income_data->host);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }            
         break;                
     }
@@ -388,3 +396,15 @@ function userInfo($user_id){
        return 7;
     }
 }
+ function collectorList($user_type_id,$host){
+     if ($user_type_id < 1 && $user_type_id > 3){
+        return 8;
+        die();
+    }
+     if ($host == "") {//@TODO CHECK SAME USERNAME  //@todo check host
+        return 9;
+        die();
+    } 
+    $con = new Z_MySQL(); 
+    //$data 
+ }
