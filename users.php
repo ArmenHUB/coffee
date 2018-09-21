@@ -5,18 +5,19 @@ require_once "errors.php";
 require_once "be_mail.php";
 
 //get send data //
-$all_data = file_get_contents('php://input');
-$income_data = json_decode($all_data);
-$params = $income_data->params;
-$is_logged_normaly = false;
-$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
-if (checkUser($income_data->user_id, $income_data->token)) {
-    $is_logged_normaly = true;
-}
+// $all_data = file_get_contents('php://input');
+// $income_data = json_decode($all_data);
+// $params = $income_data->params;
+// $is_logged_normaly = false;
+// $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+// if (checkUser($income_data->user_id, $income_data->token)) {
+//     $is_logged_normaly = true;
+// }
+
 if ($is_logged_normaly || $params->command === "login") {
     switch ($params->command) {
         case "login":
-            $result = login($params->username, md5($params->password), $income_data->host);
+            $result = login($params->username, md5($params->password), $params->host);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else { // return correct answer - array
@@ -80,11 +81,11 @@ if ($is_logged_normaly || $params->command === "login") {
             }           
             break;
         case "get_menu":
-            $result = getMenu($params->$user_type_id);
+            $result = getMenu($params->user_type_id);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" =>  $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "user_info":
@@ -176,11 +177,12 @@ function login($username, $password, $host)
         $usertype = (int)$data["userTypeID"];
         $token = createToken();
         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-        if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
-            return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
-        } else {
-            return 5;
-        }
+           if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
+             return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
+           } else {
+             return 5;
+           }
+ 
     }
     return 2;
 
@@ -378,6 +380,7 @@ function getMenu($user_type_id){
     }
  
 }
+
 /**
  * @param $user_id
  * @return array|int
@@ -396,6 +399,7 @@ function userInfo($user_id){
        return 7;
     }
 }
+
  function collectorList($user_type_id,$host){
      if ($user_type_id < 1 && $user_type_id > 3){
         return 8;
