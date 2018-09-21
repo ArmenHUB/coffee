@@ -3,16 +3,16 @@ require_once "z_config.php";
 require_once "z_mysql.php";
 require_once "errors.php";
 //get send data //
-$all_data = file_get_contents('php://input');
-$income_data = json_decode($all_data);
+// $all_data = file_get_contents('php://input');
+// $income_data = json_decode($all_data);
 
-$answer = $income_data;
-$params = $income_data->params;
-$is_logged_normaly = false;
-$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
-if (checkUser($income_data->user_id, $income_data->token)) {
-    $is_logged_normaly = true;
-}
+// $answer = $income_data;
+// $params = $income_data->params;
+// $is_logged_normaly = false;
+// $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+// if (checkUser($income_data->user_id, $income_data->token)) {
+//     $is_logged_normaly = true;
+// }
 if ($is_logged_normaly) {
 switch ($params->command) {
 
@@ -76,10 +76,10 @@ switch ($params->command) {
         break;
 }
 }
-if ($answer['error'] > 0) {
-    $answer['error'] = getError($answer['error'], $income_data->lang_id);
-}
-echo json_encode($answer);
+// if ($answer['error'] > 0) {
+//     $answer['error'] = getError($answer['error'], $income_data->lang_id);
+// }
+// echo json_encode($answer);
 
 /**
  * @param $user_id
@@ -113,6 +113,7 @@ function getDeviceList($owner_id)
         return 7;
         die();
     }
+    $arr1 = array();
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$owner_id'")[0];
     if($data['userTypeID'] == 2){
@@ -120,22 +121,35 @@ function getDeviceList($owner_id)
        if($data1){
          foreach ($data1 as $key => $value) {
              $device_id = $value['deviceID'];
-                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamValues`.`text` AS DeviceInfo,`deviceTypes`.`text` AS Model,`deviceTypes`.`deviceTypeID` AS DeviceTypeID FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`text`IN ('name','address','sum','status','location','map_icon') AND `deviceInfo`.`deviceID` = '$device_id'");
-                   if($data2){
-                         return  $data2;
-                       //print_r($data2);
+ $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamNames`.`text` AS DeviceParamName,`deviceParamValues`.`text` AS DeviceParamValue,`deviceTypes`.`text` AS Model,`deviceTypes`.`deviceTypeID` AS DeviceTypeID FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`text` IN ('name','address','sum','status','location','map_icon') AND `deviceInfo`.`deviceID` = '$device_id'");
+                   if($data2){ 
+                         $arr = array();              
+                     foreach ($data2 as $key1 => $value1) {
+                       $device_id=$value1['DeviceID'];
+                       $device_model = $value1['Model'];
+                       $device_type_id = $value1['DeviceTypeID'];
+                       $device_param_name = $value1['DeviceParamName'];
+                       $device_param_value = $value1['DeviceParamValue'];
+                       $arr['device_id'] = $device_id;
+                       $arr['device_type_id'] =  $device_type_id;
+                       $arr['device_model'] = $device_model;
+                          $arr[$device_param_name] = $device_param_value;                         
+                       }
+                      array_push($arr1,$arr);                 
                     }
                    else{
                         return 7;
                     }
          }
+     return $arr1;
     }
     else{
         return 7;
     }
 }
 }
- //getDeviceList(1);
+
+
 /**
  * @param $device_id
  * @return array|int
@@ -151,7 +165,17 @@ function deviceInfo($device_id)
     if($data['deviceID'] > 0){
           $data1 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceTypes`.`text` AS DeviceTypeName,`deviceParamNames`.`text` AS DeviceParamsNames,`deviceParamValues`.`text` AS DeviceParamsValues FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceTypes` ON `deviceTypes`.`deviceTypeID` = `deviceInfo`.`deviceTypeID` WHERE  `deviceInfo`.`deviceID` = '$device_id'  AND `deviceParamNames`.`text` IN ('location','name','address','status')");
           if($data1){
-             return $data1;
+                          $arr = array();              
+                     foreach ($data1 as $key1 => $value1) {
+                       $device_id=$value1['DeviceID'];
+                       $device_model = $value1['DeviceTypeName'];
+                       $device_param_name = $value1['DeviceParamsNames'];
+                       $device_param_value = $value1['DeviceParamsValues'];
+                       $arr['device_id'] = $device_id;
+                       $arr['device_model'] = $device_model;
+                          $arr[$device_param_name] = $device_param_value;                         
+                       }
+                      return $arr;
           }
           else{
             return 7;
@@ -161,6 +185,7 @@ function deviceInfo($device_id)
         return 7;
     }    
 }
+deviceInfo(1);
 /**
  * @param $device_id
  * @param $name
