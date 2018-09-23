@@ -125,15 +125,11 @@ function getDeviceList($owner_id)
                    if($data2){ 
                          $arr = array();              
                      foreach ($data2 as $key1 => $value1) {
-                       $device_id=$value1['DeviceID'];
-                       $device_model = $value1['Model'];
-                       $device_type_id = $value1['DeviceTypeID'];
-                       $device_param_name = $value1['DeviceParamName'];
-                       $device_param_value = $value1['DeviceParamValue'];
-                       $arr['device_id'] = $device_id;
-                       $arr['device_type_id'] =  $device_type_id;
-                       $arr['device_model'] = $device_model;
-                          $arr[$device_param_name] = $device_param_value;                         
+                          $device_param_name = $value1['DeviceParamName'];
+                          $arr['device_id'] = $value1['DeviceID'];
+                          $arr['device_type_id'] = $value1['DeviceTypeID'];
+                          $arr['device_model'] = $value1['Model'];
+                          $arr[$device_param_name] = $value1['DeviceParamValue'];                        
                        }
                       array_push($arr1,$arr);                 
                     }
