@@ -33,13 +33,17 @@ switch ($params->command) {
         }
         break;
     case "device_add_edit":
-        $data = $params->data;
-        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date,$data->serial_number);
+       // $data = $params->data;
+       // $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date,$data->serial_number);    
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->name, $params->address, $params->model,$params->location,$params->expiration_date,$params->serial_number);
+        
         if ($result == 0) { // reset password ok
             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         } else { // returned error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         }
+        // $answer = ["user_id" => $income_data->user_id, "lang_id" => $income_data->lang_id, "device_id" => $params->device_id, "name" => $params->name, "address" =>  $params->address, "model" =>  $params->model, "location" => $params->location, "exp_date" =>$params->expiration_date, "ser_number" => $params->serial_number];
+        //         $answer = ["user_id" => $income_data->user_id, "lang_id" => $income_data->lang_id, "device_id" => $params->device_id, "name" =>  $data->name, "address" =>   $data->address, "model" =>  $data->model, "location" =>  $data->location, "exp_date" => $data->expiration_date, "ser_number" =>  $data->serial_number];
         break;
     case "device_list_status_expiration":
         $result = deviceListStatusExpiration($params->owner_id);
@@ -206,11 +210,9 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
 {
     if (gettype($device_id) != "integer") {
         return 10;
-        die();
     }
     if ($name == "" || $address == "" || $device_type_id == "" || $location == ""){
         return 9;
-        die();
     }
     $con = new Z_MySQL();
    // $check_user = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$user_id'")[0];
@@ -347,19 +349,27 @@ function deviceListStatusExpiration($owner_id)
 {
     if (gettype($owner_id) != "integer") {
         return 10;
-        die();
     }
     $con = new Z_MySQL();
     if($owner_id == 0){
        $data = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` = 'expiration Date'")[0];
        $device_param_name_id = $data['deviceParamNameID'];
-       $data1 = $con->queryNoDML("SELECT `boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`deviceParamValues`.`text` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceInfo` ON `deviceInfo`.`deviceID` = `deviceUsers`.`deviceID` INNER JOIN `deviceParamValues` ON `deviceParamValues`.`deviceParamValueID` = `deviceInfo`.`deviceParamValueID` WHERE `users`.`userTypeID` = '2' AND `deviceInfo`.`deviceParamNameID` = '$device_param_name_id'");
+       $data1 = $con->queryNoDML("SELECT `boardDevice`.`deviceID` AS device_id,`boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity,`deviceParamValues`.`text` AS expirationDate,`users`.`name` AS Name FROM `boards` INNER JOIN `boardDevice` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceInfo` ON `deviceInfo`.`deviceID` = `deviceUsers`.`deviceID` INNER JOIN `deviceParamValues` ON `deviceParamValues`.`deviceParamValueID` = `deviceInfo`.`deviceParamValueID` WHERE `users`.`userTypeID` = '2' AND `deviceInfo`.`deviceParamNameID` = '$device_param_name_id'");
        if($data1){
          return $data1;
        }
        else{
          return  7;
        }   
+    }
+    else if($owner_id == -1){   
+         $data = $con->queryNoDML("SELECT `UID`,`serialNUmber` AS `serial_number` FROM `boards` WHERE `boardID` NOT IN (SELECT `boards`.`boardID` AS boardID FROM  `boards` INNER JOIN `boardDevice` ON `boards`.`boardID` = `boardDevice`.`boardID`)"); 
+         if($data){
+              return $data;
+         } 
+         else{
+            return 7;
+         } 
     }
     else{
        $data = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` = 'expiration Date'")[0];
@@ -373,6 +383,7 @@ function deviceListStatusExpiration($owner_id)
        }
     }
 }
+
 /**
  * @param $device_id
  * @return int
@@ -492,3 +503,16 @@ function getRecipeByDeviceButtonId($device_id)
 //          else{
 //             return 4;
 //          }
+// $con = new Z_MySQL();
+//         $arr = array();
+//        //$data = $con->queryNoDML("SELECT `boards`.`UID` AS UID, `boards`.`serialNumber` AS serial_number FROM  `boards` INNER JOIN `boardDevice` ON `boards`.`boardID` != `boardDevice`.`boardID`");    
+//          $data = $con->queryNoDML("SELECT `boards`.`boardID` AS board_id FROM  `boards` INNER JOIN `boardDevice` ON `boards`.`boardID` = `boardDevice`.`boardID`"); 
+//          foreach ($data as $key => $value) {
+//              $arr[$key] = $value['board_id'];
+//           } 
+//          // if($data){
+
+//          // }  
+//           print_r($arr);
+
+// SELECT `UID`,`serialNUmber` AS `serial_number` FROM `boards` WHERE `boardID` NOT IN (SELECT `boards`.`boardID` AS boardID FROM  `boards` INNER JOIN `boardDevice` ON `boards`.`boardID` = `boardDevice`.`boardID`)
