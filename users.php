@@ -270,11 +270,9 @@ function checkPassword($user_id, $password)
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
     if ($password == "") {
         return 9;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id' AND `password`='$password'");
@@ -294,11 +292,9 @@ function changePassword($user_id, $password)
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
     if ($password == "") {
         return 9;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
@@ -318,7 +314,6 @@ function removeUser($user_id)
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
@@ -350,7 +345,6 @@ function getMenu($user_type_id)
 {
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
-        die();
     }
     $con = new Z_MySQL();
     if ($user_type_id == "1") {
@@ -379,7 +373,6 @@ function userInfo($user_id)
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT `name`,`host`,`email`,`username`  FROM `users` WHERE  `userID`= '$user_id'")[0];
@@ -394,11 +387,9 @@ function collectorList($user_type_id, $host)
 {
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
-        die();
     }
     if ($host == "") {//@TODO CHECK SAME USERNAME  //@todo check host
         return 9;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
