@@ -5,15 +5,14 @@ require_once "errors.php";
 require_once "be_mail.php";
 
 //get send data //
-// $all_data = file_get_contents('php://input');
-// $income_data = json_decode($all_data);
-// $params = $income_data->params;
-// $is_logged_normaly = false;
-// $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
-// if (checkUser($income_data->user_id, $income_data->token)) {
-//     $is_logged_normaly = true;
-// }
-
+$all_data = file_get_contents('php://input');
+$income_data = json_decode($all_data);
+$params = $income_data->params;
+$is_logged_normaly = false;
+$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+if (checkUser($income_data->user_id, $income_data->token)) {
+    $is_logged_normaly = true;
+}
 if ($is_logged_normaly || $params->command === "login") {
     switch ($params->command) {
         case "login":
@@ -37,73 +36,73 @@ if ($is_logged_normaly || $params->command === "login") {
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "user_add_edit":
-            $result = addEditUser($income_data->user_id, $params->username, $params->name, md5($params->password),$income_data->host, $params->user_type_id, $params->mail);
+            $result = addEditUser($params->user_id, $params->username, $params->name,$params->password, $params->host, $params->user_type_id, $params->mail);
             if($result == 0){ // correctly added or edited
-                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $params->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            }          
+            }
             break;
         case "user_remove":
             $result = removeUser($income_data->user_id);
-            if($result == 0){ // correctly removed
+            if ($result == 0) { // correctly removed
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }else{ // returned error number
+            } else { // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            }          
+            }
             break;
         case "check_password":
             $result = checkPassword($income_data->user_id, md5($params->password));
-            if($result == 0){ // correct password
+            if ($result == 0) { // correct password
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }else{ // returned error number
+            } else { // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            }            
+            }
             break;
         case "reset_password":
             $result = resetPassword($params->mail);
-            if($result == 0){ // reset password ok
+            if ($result == 0) { // reset password ok
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }else{ // returned error number
+            } else { // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            }            
+            }
             break;
         case "change_password":
             $result = changePassword($income_data->user_id, md5($params->password));
-            if($result == 0){ // reset password ok
+            if ($result == 0) { // reset password ok
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }else{ // returned error number
+            } else { // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            }           
+            }
             break;
         case "get_menu":
             $result = getMenu($params->user_type_id);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $income_data->token, "user_id" =>  $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "user_info":
-            $result = userInfo($income_data->user_id);
+            $result = userInfo($params->user_id);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" =>  $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }            
-        break;
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
         case "collector_list":
-            $result = collectorList($params->user_type_id,$income_data->host);
+            $result = collectorList($params->user_type_id, $income_data->host);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
                 $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-            }            
-        break;                
+            }
+            break;
     }
 }
 if ($answer['error'] > 0) {
@@ -162,6 +161,7 @@ function createToken()
     }
     return implode($pass);
 }
+
 /**
  * @param $username
  * @param $password
@@ -177,16 +177,16 @@ function login($username, $password, $host)
         $usertype = (int)$data["userTypeID"];
         $token = createToken();
         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-           if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
-             return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
-           } else {
-             return 5;
-           }
- 
+        if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
+            return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
+        } else {
+            return 5;
+        }
     }
     return 2;
 
 }
+
 /**
  * @param $user_type_id
  * @return array|int
@@ -195,29 +195,26 @@ function userList($user_type_id)// GET usertypeid, RETURN array userList
 {
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
-    }
-    else{
+    } else {
         $con = new Z_MySQL();
-        if($user_type_id == 0){
-            $data=$con->queryNoDML("SELECT `userID`,`name` FROM `users`");
-            if($data) {
+        if ($user_type_id == 0) {
+            $data = $con->queryNoDML("SELECT `userID`,`name` FROM `users`");
+            if ($data) {
                 return $data;
+            } else {
+                return 4;
             }
-            else{
-                return 4;                
-            } 
+        } else {
+            $data = $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE `userTypeID` = '{$user_type_id}'");
+            if ($data) {
+                return $data;
+            } else {
+                return 4;
+            }
         }
-        else{
-           $data=$con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE `userTypeID` = '{$user_type_id}'");
-           if($data) {
-               return $data;
-           }
-           else{
-              return 4;                
-           } 
-       }
     }
 }
+
 /**
  * @param $user_id
  * @param $username
@@ -232,44 +229,38 @@ function addEditUser($user_id, $username, $name, $password, $host, $user_type_id
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
-    if ($username == "" || $name == "" || $password == "" || $host == "" || $mail == "") {//@TODO CHECK SAME USERNAME  //@todo check host
+    if ($username == "" || $name == "" ||  $host == "" || $mail == "") {//@TODO CHECK SAME USERNAME  //@todo check host
         return 9;
-        die();
     }
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
-        die();
     }
     $con = new Z_MySQL();
-        if($user_id == 0){
-             $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' OR `host` = '$host' OR `email` = '$mail'")[0];
-           if($data1['userID'] > 0){
-              return 4;
-           }
-           else{
-               $password_random = createToken();              
-               $data=$con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
-               if($data){
-                 return 0;
-               }
-               else{
-                 return 4;
-               }
-           } 
-       }
-       else{
-          $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'"); 
-          if($data){
-           $con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$user_type_id}', `email` = '{$mail}', `name`='{$name}' WHERE  `userID` = '{$user_id}'");
-           return 0;
-          }
-          else{
+    if ($user_id == 0) {
+        $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' OR `host` = '$host' OR `email` = '$mail'")[0];
+        if ($data1['userID'] > 0) {
             return 4;
-          }
-       }            
+        } else {
+            $password_random = createToken();
+            $data = $con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
+            if ($data) {
+                return 0;
+            } else {
+                return 4;
+            }
+        }
+    } else {
+        $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
+        if ($data) {
+            $con->queryDML("UPDATE `users` SET  `username` = '{$username}', `password` = '{$password}', `host` = '{$host}', `userTypeID` = '{$user_type_id}', `email` = '{$mail}', `name`='{$name}' WHERE  `userID` = '{$user_id}'");
+            return 0;
+        } else {
+            return 4;
+        }
+    }
 }
+
 /**
  * @param $user_id
  * @param $password
@@ -287,13 +278,13 @@ function checkPassword($user_id, $password)
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id' AND `password`='$password'");
-    if($data){
-      return 0;
-    }
-    else{
-      return 7;
+    if ($data) {
+        return 0;
+    } else {
+        return 7;
     }
 }
+
 /**
  * @param $user_id
  * @param $password
@@ -309,16 +300,16 @@ function changePassword($user_id, $password)
         return 9;
         die();
     }
-   $con = new Z_MySQL();
-   $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
-   if($data){
-      $con->queryDML("UPDATE `users` SET `password`='{$password}' WHERE `users`.`userID` = '{$user_id}'");
-      return 0;
-   }
-   else{
-      return 7;
-   } 
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
+    if ($data) {
+        $con->queryDML("UPDATE `users` SET `password`='{$password}' WHERE `users`.`userID` = '{$user_id}'");
+        return 0;
+    } else {
+        return 7;
+    }
 }
+
 /**
  * @param $user_id
  * @return int
@@ -331,14 +322,14 @@ function removeUser($user_id)
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
-   if($data){
-      $con->queryDML("DELETE FROM users WHERE `userID`= '$user_id'");
-      return 0;
-   }
-   else{
-      return 7;
-   }   
+    if ($data) {
+        $con->queryDML("DELETE FROM users WHERE `userID`= '$user_id'");
+        return 0;
+    } else {
+        return 7;
+    }
 }
+
 /**
  * @param $mail
  * @return int
@@ -350,71 +341,70 @@ function resetPassword($mail)
     }
 
 }
+
 /**
  * @param $user_type_id
  * @return array|int
  */
-function getMenu($user_type_id){
-    if ($user_type_id < 1 && $user_type_id > 3){
+function getMenu($user_type_id)
+{
+    if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
         die();
     }
-    $con = new Z_MySQL();   
-    if($user_type_id == "1"){
+    $con = new Z_MySQL();
+    if ($user_type_id == "1") {
         $data = $con->queryNoDML("SELECT * FROM `menu` WHERE  `userTypeID`= '1'");
-        if($data){
-           return $data;
+        if ($data) {
+            return $data;
+        } else {
+            return 8;
         }
-        else{
-          return 8;
-        }                 
-    }
-    else if($user_type_id == "2"){
+    } else if ($user_type_id == "2") {
         $data = $con->queryNoDML("SELECT * FROM `menu` WHERE  `userTypeID`= '2'");
-        if($data){
-           return $data;
+        if ($data) {
+            return $data;
+        } else {
+            return 8;
         }
-        else{
-          return 8;
-        }         
     }
- 
+
 }
 
 /**
  * @param $user_id
  * @return array|int
  */
-function userInfo($user_id){
+function userInfo($user_id)
+{
     if (gettype($user_id) != "integer") {
         return 7;
         die();
     }
-    $con = new Z_MySQL(); 
-    $data = $con->queryNoDML("SELECT `name`,`host`,`email` FROM `users` WHERE  `userID`= '$user_id'")[0];
-    if($data){
-       return $data;
-    }  
-    else{
-       return 7;
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT `name`,`host`,`email`,`username`  FROM `users` WHERE  `userID`= '$user_id'")[0];
+    if ($data) {
+        return $data;
+    } else {
+        return 7;
     }
 }
 
- function collectorList($user_type_id,$host){
-     if ($user_type_id < 1 && $user_type_id > 3){
+function collectorList($user_type_id, $host)
+{
+    if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
         die();
     }
-     if ($host == "") {//@TODO CHECK SAME USERNAME  //@todo check host
+    if ($host == "") {//@TODO CHECK SAME USERNAME  //@todo check host
         return 9;
         die();
-    } 
-    $con = new Z_MySQL(); 
-    $data =  $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
-    if($data){
-       return $data;
     }
-    else{
+    $con = new Z_MySQL();
+    $data = $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
+    if ($data) {
+        return $data;
+    } else {
         return 8;
     }
- }
+}
