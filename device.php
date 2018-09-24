@@ -1,5 +1,5 @@
 <?php
-require_once "config.php";
+require_once "z_config.php";
 require_once "z_mysql.php";
 require_once "errors.php";
 //get send data //
@@ -13,70 +13,69 @@ require_once "errors.php";
 // if (checkUser($income_data->user_id, $income_data->token)) {
 //     $is_logged_normaly = true;
 // }
+if ($is_logged_normaly) {
+switch ($params->command) {
 
-// if ($is_logged_normaly) {
-// switch ($params->command) {
+    case "device_list":
+        $result = getDeviceList($params->owner_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_info":
+        $result = deviceInfo($params->device_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_add_edit":
+        $data = $params->data;
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date,$data->serial_number);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
+    case "device_list_status_expiration":
+        $result = deviceListStatusExpiration($params->owner_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+    case "device_remove":
+        $result = removeDevice($params->device_id);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
+    case "device_recipe_add":
+        $result = addEditDeviceRecipe($params->device_id, $params->button_id, $params->price, $params->recipe_id);
+        if ($result == 0) { // reset password ok
+            $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        } else { // returned error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        }
+        break;
 
-//     case "device_list":
-//         $result = getDeviceList($params->owner_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_info":
-//         $result = deviceInfo($params->device_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_add_edit":
-//         $data = $params->data;
-//         $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $data->name, $data->address, $data->model, $data->location, $data->expiration_date,$data->serial_number);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
-//     case "device_list_status_expiration":
-//         $result = deviceListStatusExpiration($params->owner_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-//     case "device_remove":
-//         $result = removeDevice($params->device_id);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
-//     case "device_recipe_add":
-//         $result = addEditDeviceRecipe($params->device_id, $params->button_id, $params->price, $params->recipe_id);
-//         if ($result == 0) { // reset password ok
-//             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         } else { // returned error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         }
-//         break;
-
-//     case "get_recipe_by_device_button_id":
-//         $result = getRecipeByDeviceButtonId($params->device_id);
-//         if (gettype($result) == 'integer') { // return error number
-//             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//         } else {
-//             $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//         }
-//         break;
-// }
-// }
+    case "get_recipe_by_device_button_id":
+        $result = getRecipeByDeviceButtonId($params->device_id);
+        if (gettype($result) == 'integer') { // return error number
+            $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+        } else {
+            $answer = ["token" => $result["token"], "user_id" => $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+        }
+        break;
+}
+}
 // if ($answer['error'] > 0) {
 //     $answer['error'] = getError($answer['error'], $income_data->lang_id);
 // }
@@ -145,9 +144,7 @@ function getDeviceList($owner_id)
     }
 }
 }
-
 // $at1 = getDeviceList(1);
-
 // foreach ($at1 as $key => $value) {
 //   echo "DeviceID"."=>".$value['device_id']."</br>";
 //   echo "DeviceTypeID"."=>".$value['device_type_id']."</br>";
@@ -160,7 +157,6 @@ function getDeviceList($owner_id)
 //   echo "Map_icon"."=>".$value['map_icon']."</br>";
 //   echo "</br>";
 // }
-
 /**
  * @param $device_id
  * @return array|int
@@ -193,7 +189,7 @@ function deviceInfo($device_id)
         return 7;
     }    
 }
-// $at2 = deviceInfo(4);
+// $at2 = deviceInfo(1);
 // foreach ($at2 as $key => $value) {
 //   echo $key.$value."</br>";
 // }
@@ -206,30 +202,35 @@ function deviceInfo($device_id)
  * @param $expiration_date
  * @return int
  */
-function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_type_id, $location, $expiration_date,$serial_number)
+function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_type_id, $location, $expiration_date,$serial_number,$status)
 {
     if (gettype($device_id) != "integer") {
         return 10;
         die();
     }
-    if ($name == "" || $address == "" || $device_type_id == "" || $location == "" || $expiration_date == ""){
+    if ($name == "" || $address == "" || $device_type_id == "" || $location == ""){
         return 9;
         die();
     }
     $con = new Z_MySQL();
+   // $check_user = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$user_id'")[0];
+    if($expiration_date !== ""){
       if($device_id == 0){
-            $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$device_type_id')");
-             $data1 = $con->queryNoDML("SELECT `deviceID` FROM `deviceUsers` WHERE `userID` = '$user_id'")[0];
-             if($data1['deviceID'] > 0){
-                $deviceID = $data1['deviceID'];
+           $data1= $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$device_type_id')");
+             if($data1){
+                $device_id = $con->connection->insert_id;
+
                  // Add boardDevice
                  $data_board = $con->queryNoDML("SELECT `boardID` FROM `boards` WHERE `serialNumber` = '$serial_number'")[0];
                  $board_id = $data_board['boardID'];
-                 $con->queryDML("INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES ('$deviceID', '$board_id')");
-
+                 $con->queryDML("INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES ('$device_id', '$board_id')");
+                 
+                  //Add device values
                 $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$location'),(NULL, '$address'),(NULL, '$expiration_date')");
 
+                 // Get value id
                 $data2 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceParamValues` WHERE `text` IN ('$name','$location','$address','$expiration_date')");
+
                 // DeviceParamValues
                 $val_id1 = $data2[0]['deviceParamValueID'];
                 $val_id2 = $data2[1]['deviceParamValueID'];
@@ -242,7 +243,7 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
                 $name_id2 = $data3[1]['deviceParamNameID'];// name
                 $name_id3 = $data3[2]['deviceParamNameID'];// address              
                 $name_id4 = $data3[3]['deviceParamNameID'];// expiration date  
-               $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$deviceID','$name_id2','$val_id1','$device_type_id'), ('$deviceID','$name_id1','$val_id2','$device_type_id'), ('$deviceID','$name_id3','$val_id3','$device_type_id'),('$deviceID','$name_id4','$val_id4','$device_type_id')");  
+               $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$device_id','$name_id2','$val_id1','$device_type_id'), ('$device_id','$name_id1','$val_id2','$device_type_id'), ('$device_id','$name_id3','$val_id3','$device_type_id'),('$device_id','$name_id4','$val_id4','$device_type_id')");  
                    if($data4){
                       return 0;
                    }
@@ -254,23 +255,90 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
       else{
          $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'"); 
          if($data){
+            $arr = array();           
+            $data3 = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` IN ('location','name','address','status','expiration Date')");
+            foreach ($data3 as $key => $value) {
+              $arr[$key] = $value['deviceParamNameID'];
+            }        
             $data1 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'");
-            $status = '1';
             $array_values = array($location,$name,$address,$status,$expiration_date);
             $i = 0;
              foreach ($data1 as $key => $value) {
                  $device_param_value_id = $value['deviceParamValueID'];
-                 $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$device_param_value_id'");
-                 $i++;
+                 if(in_array( $device_param_value_id,$arr, TRUE)){
+                  $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$device_param_value_id'");
+                   $i++;                   
+                 }
              }
              return 0;
          }
          else{
             return 4;
          }
-      }
-}
+      }        
+    }
+    else if($expiration_date == ""){
+      if($device_id == 0){
+           $data1= $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$device_type_id')");
+             if($data1){
+                $device_id = $con->connection->insert_id;
 
+                 // Add boardDevice
+                 $data_board = $con->queryNoDML("SELECT `boardID` FROM `boards` WHERE `serialNumber` = '$serial_number'")[0];
+                 $board_id = $data_board['boardID'];
+                 $con->queryDML("INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES ('$device_id', '$board_id')");
+                 
+                  //Add device values
+                $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, '$name'),(NULL, '$location'),(NULL, '$address')");
+
+                 // Get value id
+                $data2 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceParamValues` WHERE `text` IN ('$name','$location','$address')");
+
+                // DeviceParamValues
+                $val_id1 = $data2[0]['deviceParamValueID'];
+                $val_id2 = $data2[1]['deviceParamValueID'];
+                $val_id3 = $data2[2]['deviceParamValueID'];
+
+                $data3 = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` IN ('name','location','address','expiration Date')");
+                // DeviceParamNames
+                $name_id1 = $data3[0]['deviceParamNameID'];// location
+                $name_id2 = $data3[1]['deviceParamNameID'];// name
+                $name_id3 = $data3[2]['deviceParamNameID'];// address               
+               $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$device_id','$name_id2','$val_id1','$device_type_id'), ('$device_id','$name_id1','$val_id2','$device_type_id'), ('$device_id','$name_id3','$val_id3','$device_type_id')");  
+                   if($data4){
+                      return 0;
+                   }
+                   else{
+                      return 4;
+                   }              
+             }
+      }
+      else{
+         $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'"); 
+         if($data){
+            $arr = array();           
+            $data3 = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` IN ('location','name','address','status')");
+            foreach ($data3 as $key => $value) {
+              $arr[$key] = $value['deviceParamNameID'];
+            }        
+            $data1 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'");
+            $array_values = array($location,$name,$address,$status);
+            $i = 0;
+             foreach ($data1 as $key => $value) {
+                 $device_param_value_id = $value['deviceParamValueID'];
+                 if(in_array( $device_param_value_id,$arr, TRUE)){
+                  $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$device_param_value_id'");
+                   $i++;                   
+                 }
+             }
+             return 0;
+         }
+         else{
+            return 4;
+         }
+      }         
+    }
+}
 /**
  * @param $device_id
  * @return array|int
@@ -394,3 +462,33 @@ function getRecipeByDeviceButtonId($device_id)
        return 7;
     }
 }
+//$data1 = $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('1','2')");
+// $device_id =  "1";
+// $location = "12.120.242";
+// $name = "Apple A12";
+// $address = "Sebastia Street";
+// $status = "3";
+// $expiration_date = "2020-07-13 08:00:99";
+// $con = new Z_MySQL();
+//          $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'"); 
+//          if($data){
+//             $arr = array();           
+//             $data3 = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` IN ('location','name','address','status','expiration Date')");
+//             foreach ($data3 as $key => $value) {
+//               $arr[$key] = $value['deviceParamNameID'];
+//             }        
+//             $data1 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'");
+//             $array_values = array($location,$name,$address,$status,$expiration_date);
+//             $i = 0;
+//              foreach ($data1 as $key => $value) {
+//                  $device_param_value_id = $value['deviceParamValueID'];
+//                  if(in_array( $device_param_value_id,$arr, TRUE)){
+//                   $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$device_param_value_id'");
+//                    $i++;                   
+//                  }
+//              }
+//              return 0;
+//          }
+//          else{
+//             return 4;
+//          }
