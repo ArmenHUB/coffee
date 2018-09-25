@@ -383,7 +383,7 @@ function deviceListStatusExpiration($owner_id)
        }
     }
 }
-
+print_r(deviceListStatusExpiration(0));
 /**
  * @param $device_id
  * @return int
