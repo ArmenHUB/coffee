@@ -5,129 +5,129 @@ require_once "errors.php";
 require_once "be_mail.php";
 
 //get send data //
-// $all_data = file_get_contents('php://input');
-// $income_data = json_decode($all_data);
-// $params = $income_data->params;
-// $is_logged_normaly = false;
-// $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
-// if (checkUser($income_data->user_id, $income_data->token)) {
-//     $is_logged_normaly = true;
-// }
-// if ($is_logged_normaly || $params->command === "login") {
-//     switch ($params->command) {
-//         case "login":
-//             $result = login($params->username, md5($params->password), $params->host);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else { // return correct answer - array
-//                 $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "logout":
-//             $result = logout($income_data->user_id);
-//             if ($result == 0) { // correctly logout
-//                 $answer = ["token" => T_LOGOUT, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => $income_data->user_id, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "user_list":
-//             $result = userList($params->user_type_id);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "user_add_edit":
-//             $result = addEditUser($params->user_id, $params->username, $params->name,$params->password, $params->host, $params->user_type_id, $params->mail);
-//             if($result == 0){ // correctly added or edited
-//                 $answer = ["token" => $income_data->token, "user_id" => $params->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }else{ // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "user_remove":
-//             $result = removeUser($params->user_id);
-//             if ($result == 0) { // correctly removed
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "check_password":
-//             $result = checkPassword($income_data->user_id, md5($params->password));
-//             if ($result == 0) { // correct password
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "reset_password":
-//             $result = resetPassword($params->mail);
-//             if ($result == 0) { // reset password ok
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "change_password":
-//             $result = changePassword($income_data->user_id, md5($params->password));
-//             if ($result == 0) { // reset password ok
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             } else { // returned error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             }
-//             break;
-//         case "get_menu":
-//             $result = getMenu($params->user_type_id);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "user_info":
-//             $result = userInfo($params->user_id);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//         case "collector_list":
-//             $result = collectorList($params->user_type_id, $income_data->host);
-//             if (gettype($result) == 'integer') { // return error number
-//                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-//             } else {
-//                 $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
-//             }
-//             break;
-//     }
-// }
-// if ($answer['error'] > 0) {
-//     $answer['error'] = getError($answer['error'], $income_data->lang_id);
-// }
-// echo json_encode($answer);
+$all_data = file_get_contents('php://input');
+$income_data = json_decode($all_data);
+$params = $income_data->params;
+$is_logged_normaly = false;
+$answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 3, "lang_id" => $income_data->lang_id, "info" => []];
+if (checkUser($income_data->user_id, $income_data->token)) {
+    $is_logged_normaly = true;
+}
+if ($is_logged_normaly || $params->command === "login") {
+    switch ($params->command) {
+        case "login":
+            $result = login($params->username, md5($params->password), $params->host);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else { // return correct answer - array
+                $answer = ["token" => $result["token"], "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
+        case "logout":
+            $result = logout($income_data->user_id);
+            if ($result == 0) { // correctly logout
+                $answer = ["token" => T_LOGOUT, "user_id" => 0, "error" => 0, "lang_id" => $income_data->lang_id, "info" => []];
+            } else { // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => $income_data->user_id, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "user_list":
+            $result = userList($params->user_type_id);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
+        case "user_add_edit":
+            $result = addEditUser($params->user_id, $params->username, $params->name, md5($params->password), $params->host, $params->user_type_id, $params->mail);
+            if($result == 0){ // correctly added or edited
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }else{ // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "user_remove":
+            $result = removeUser($params->user_id);
+            if ($result == 0) { // correctly removed
+                $answer = ["token" => $income_data->token, "user_id" => $params->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            } else { // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "check_password":
+            $result = checkPassword($income_data->user_id, md5($params->password));
+            if ($result == 0) { // correct password
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            } else { // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "reset_password":
+            $result = resetPassword($params->mail);
+            if ($result == 0) { // reset password ok
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            } else { // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "change_password":
+            $result = changePassword($income_data->user_id, md5($params->password));
+            if ($result == 0) { // reset password ok
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            } else { // returned error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            }
+            break;
+        case "get_menu":
+            $result = getMenu($params->user_type_id);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
+        case "user_info":
+            $result = userInfo($params->user_id);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
+        case "collector_list":
+            $result = collectorList($params->user_type_id, $income_data->host);
+            if (gettype($result) == 'integer') { // return error number
+                $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
+            } else {
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+            }
+            break;
+    }
+}
+if ($answer['error'] > 0) {
+    $answer['error'] = getError($answer['error'], $income_data->lang_id);
+}
+echo json_encode($answer);
 
-// /**
-//  * @param $user_id
-//  * @return int
-//  */
-// function logout($user_id)
-// {
-//     $con = new Z_MySQL();
-//     if ($con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}")) {
-//         return 0;
-//     }
-//     return 7;
-// }
+/**
+ * @param $user_id
+ * @return int
+ */
+function logout($user_id)
+{
+    $con = new Z_MySQL();
+    if ($con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}")) {
+        return 0;
+    }
+    return 7;
+}
 
-// /**
-//  * @param $user_id
-//  * @param $token
-//  * @return bool
-//  */
+/**
+ * @param $user_id
+ * @param $token
+ * @return bool
+ */
 function checkUser($user_id, $token)
 {
     $con = new Z_MySQL();
@@ -168,24 +168,6 @@ function createToken()
  * @param $host
  * @return array|int
  */
-// function login($username, $password, $host)
-// {
-//     $con = new Z_MySQL();
-//     $data = $con->queryNoDML("SELECT * FROM `users` WHERE `username` = '{$username}' AND `password` = '{$password}' AND `host` = '{$host}'")[0];
-//     if ((int)$data["userID"] > 0) {
-//         $user_id = (int)$data["userID"];
-//         $usertype = (int)$data["userTypeID"];
-//         $token = createToken();
-//         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-//         if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
-//             return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
-//         } else {
-//             return 5;
-//         }
-//     }
-//     return 2;
-
-// }
 function login($username, $password, $host)
 {
     $con = new Z_MySQL();
@@ -195,31 +177,28 @@ function login($username, $password, $host)
         $usertype = (int)$data["userTypeID"];
         $token = createToken();
         $cur_time = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
-         $data1 = $con->queryNoDML("SELECT * FROM `loggedUsers` WHERE `userID` = '{$user_id}'");
-         if($data1){
+        $data1 = $con->queryNoDML("SELECT * FROM `loggedUsers` WHERE `userID` = '{$user_id}'");
+        if($data1){
             $cur_date = new DateTime($cur_time);
             $last_date = new DateTime($data1[1]['lastAction']);
             if ($last_date->getTimestamp() + LOG_OFF_DELAY > $cur_date->getTimestamp() || LOG_OFF_DELAY === 0){
                 return 5;
             }
             else{
-               $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
+                $con->queryDML("DELETE FROM `loggedUsers` WHERE `loggedUsers`.`userID` = {$user_id}");
             }
-         }
-         else{
+        }
+        else{
             if ($con->queryDML("INSERT INTO `loggedUsers`(`userID`, `lastAction`, `token`) VALUES ('{$user_id}', '$cur_time', '$token')")) {
-               return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
+                return ["token" => $token, "user_id" => $user_id, "user_type_id" => $usertype];
             } else {
-              return 5;
-            }            
-         }
+                return 5;
+            }
+        }
     }
     return 2;
 }
-$username = "Armm555";
-$password = "arm876";
-$host = "coffeenew";
-print_r(login($username, md5($password), $host));
+
 /**
  * @param $user_type_id
  * @return array|int
@@ -271,7 +250,7 @@ function addEditUser($user_id, $username, $name, $password, $host, $user_type_id
     }
     $con = new Z_MySQL();
     if ($user_id == 0) {
-        $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' OR `host` = '$host' OR `email` = '$mail'")[0];
+        $data1 = $con->queryNoDML("SELECT `userID` FROM `users` WHERE  `username` = '$username' AND `host` = '$host' OR `email` = '$mail'")[0];
         if ($data1['userID'] > 0) {
             return 4;
         } else {
@@ -347,6 +326,7 @@ function removeUser($user_id)
 {
     if (gettype($user_id) != "integer") {
         return 7;
+        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
@@ -378,6 +358,7 @@ function getMenu($user_type_id)
 {
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
+        die();
     }
     $con = new Z_MySQL();
     if ($user_type_id == "1") {
@@ -425,10 +406,9 @@ function collectorList($user_type_id, $host)
         return 9;
     }
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `userID`,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
+    $data = $con->queryNoDML("SELECT `userID` AS user_id,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
     if ($data) {
         return $data;
     } else {
         return 8;
     }
-}
