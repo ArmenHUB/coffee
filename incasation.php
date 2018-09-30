@@ -62,7 +62,7 @@ function getIncasasationInfo($device_id, $user_type_id)
         die();
     }
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID` AS ingredientsID,`ingredientsName`.`text` AS ingr_name, `action_log`.`count` AS measurement, `measurement_units`.`text` AS type FROM `action_log` INNER JOIN `ingredients` ON `ingredients`.`ingredientsID` = `action_log`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` INNER JOIN `measurement_units` ON `measurement_units`.`measurement_unitsID` = `action_log`.`measurement_unitsID` WHERE `action_log`.`deviceID` = '$device_id'");
+    $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID` AS ingredientsID,`ingredientsName`.`text` AS ingr_name, SUM(`action_log`.`count`) AS measurement, `measurement_units`.`text` AS type FROM `action_log` INNER JOIN `ingredients` ON `ingredients`.`ingredientsID` = `action_log`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` INNER JOIN `measurement_units` ON `measurement_units`.`measurement_unitsID` = `action_log`.`measurement_unitsID` where `action_log`.`deviceID` = '$device_id' GROUP BY `ingredientsName`.`text`");
 
     if($data){
         return $data;
