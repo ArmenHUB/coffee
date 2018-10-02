@@ -65,7 +65,7 @@ function getIngridientTable($device_id, $scale, $date_rage)
     ];
 }
 
-function getEnchashementTable($device_id, $scale, $date_rage)
+function getEnchashementTable($device_id, $scale, $date_rage,$user_id)
 {
    if (gettype($device_id) != "integer") {
         return 10;
@@ -79,8 +79,33 @@ function getEnchashementTable($device_id, $scale, $date_rage)
       $datetime_2 = $datetime[1];
       $arr_val = [CUP,INC_MONEY];
       $arr_send = array();
-    switch ($scale) {
-        case 0: // all          
+      if($device_id == 0){
+            $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceUsers` WHERE `userID`='$user_id'");
+            for ($i=0; $i < count($data); $i++) { 
+               $device_id = $data[$i]['deviceID'];
+           $data1 = $con->queryNoDML("SELECT DISTINCT year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute, second(`timestamp`) AS Second FROM `action_log`INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `action_log`.`deviceID` = '$device_id' AND  `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1])");
+           foreach ($data1 as $key => $value) {
+               $arr = array();
+               $year=$value['Year'];
+               $month=$value['Month'];
+               $day=$value['Day'];
+               $hour=$value['Hour'];
+               $minute=$value['Minute'];
+               $second=$value['Second'];
+               $date = $year."-".$month."-".$day." ".$hour.":".$minute.":".$second;
+               $data2 = $con->queryNoDML("SELECT  `ingredientsName`.`text` AS ingr_name, `count` AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `action_log`.`deviceID` = '$device_id' AND `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `timestamp` = '$date'");
+               $arr['date'] = $date;
+               $arr['cup'] = $data2[0]['CashOut'];
+               $arr['cash_out'] = $data2[1]['CashOut'];
+               array_push($arr_send, $arr);
+            }
+
+            }
+            print_r($arr_send);
+      }
+      else{
+            switch ($scale) {
+            case 0: // all          
            $data = $con->queryNoDML("SELECT DISTINCT year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute, second(`timestamp`) AS Second FROM `action_log` WHERE `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id'");
            foreach ($data as $key => $value) {
                $arr = array();
@@ -111,7 +136,8 @@ function getEnchashementTable($device_id, $scale, $date_rage)
            $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID`,year(`timestamp`) AS Year, month(`timestamp`) AS Month,`ingredientsName`.`text` AS ingr_name, `count` AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]))");
            return $data; 
         break; 
-    }                                      
+        } 
+      }                                     
    // return [
    //     "headers" => ["Datetime", "Cup", "Cash Out",],
    //     "body" => [
@@ -121,7 +147,6 @@ function getEnchashementTable($device_id, $scale, $date_rage)
    //     ]
    // ];
 }
-
 
 function getVendingTable($device_id, $scale, $date_rage)
 {
