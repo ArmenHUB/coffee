@@ -124,7 +124,7 @@ function getEnchashementTable($device_id, $scale, $date_rage,$user_id)
       else{
             switch ($scale) {
             case "0": // all          
-           $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`,`timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND 1 GROUP BY `timestamp`");
+           $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, `timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND 1 GROUP BY `timestamp`");
                foreach ($data1 as $key => $value) {
                  $arr = array();
                  $date = $value['timestamp'];
@@ -136,19 +136,62 @@ function getEnchashementTable($device_id, $scale, $date_rage,$user_id)
                  $arr['cash_out'] = $count_ingr[1];
                  array_push($arr_send, $arr);
                }
-           print_r($arr_send);
+           return $arr_send;
         break;
-        case 1: // hour
-           $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID`,year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour,`ingredientsName`.`text` AS ingr_name, `count`AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1])");
-           return $data;            
+        case "1": // hour
+           $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND 1 GROUP BY `timestamp`");
+               foreach ($data1 as $key => $value) {
+                 $arr = array();
+                 $year=$value['Year'];
+                 $month=$value['Month'];
+                 $day=$value['Day'];
+                 $hour=$value['Hour'];
+                 $minute=$value['Minute'];
+                 $date = $year."-".$month."-".$day." ".$hour.":".$minute;
+                 $count = $value['count'];
+                 $count_ingr = explode(",",$count);
+                 $arr['device_id'] = $value['deviceID'];
+                 $arr['date'] = $date;
+                 $arr['cup'] = $count_ingr[0];
+                 $arr['cash_out'] = $count_ingr[1];
+                 array_push($arr_send, $arr);
+               }
+           return $arr_send;            
         break;
-        case 2: // day
-           $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID`,year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day,`ingredientsName`.`text` AS ingr_name, `count` AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1])  ");
-           return $data;            
+        case "2": // day
+              $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND 1 GROUP BY `timestamp`");
+               foreach ($data1 as $key => $value) {
+                 $arr = array();
+                 $year=$value['Year'];
+                 $month=$value['Month'];
+                 $day=$value['Day'];
+                 $date = $year."-".$month."-".$day;
+                 $count = $value['count'];
+                 $count_ingr = explode(",",$count);
+                 $arr['device_id'] = $value['deviceID'];
+                 $arr['date'] = $date;
+                 $arr['cup'] = $count_ingr[0];
+                 $arr['cash_out'] = $count_ingr[1];
+                 array_push($arr_send, $arr);
+               }
+           return $arr_send;             
         break;
-        case 3: // month
-           $data = $con->queryNoDML("SELECT `action_log`.`ingredientsID`,year(`timestamp`) AS Year, month(`timestamp`) AS Month,`ingredientsName`.`text` AS ingr_name, `count` AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]))");
-           return $data; 
+        case "3": // month
+              $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, Year(`timestamp`) AS Year, month(`timestamp`) AS Month FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id' AND 1 GROUP BY `timestamp`");
+               foreach ($data1 as $key => $value) {
+                 $arr = array();
+                 $year=$value['Year'];
+                 $month=$value['Month'];
+                 $date = $year."-".$month;
+                 $count = $value['count'];
+                 $count_ingr = explode(",",$count);
+                 $arr['device_id'] = $value['deviceID'];
+                 $arr['date'] = $date;
+                 $arr['cup'] = $count_ingr[0];
+                 $arr['cash_out'] = $count_ingr[1];
+                 array_push($arr_send, $arr);
+               }
+           return $arr_send;
         break; 
         } 
       }                                     
