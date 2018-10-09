@@ -375,6 +375,7 @@ function removeDevice($device_id)
     if($data){
        $con->queryDML("DELETE FROM `deviceInfo` WHERE `deviceID`= '$device_id'");
        $con->queryDML("DELETE FROM `deviceUsers` WHERE `deviceID`= '$device_id'");
+       $con->queryDML("DELETE FROM `boardDevice` WHERE `deviceID`= '$device_id'");
        foreach ($data as $key => $value) {
           $device_param_value_id = $value['deviceParamValueID'];
           $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");
