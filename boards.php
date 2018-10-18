@@ -127,34 +127,21 @@ function checkSerialNumber($serial_number){
  * @return int
  */
 function expirationDateEdit($device_id,$expiration_date){
-    if(gettype($device_id) != "integer") {
-        return 10;
-        die();
-    }
-    if($expiration_date == ""){
-        return 9;
-        die();
-    }
-    $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `deviceParamNameID` FROM `deviceParamNames` WHERE `text` = 'expiration Date'")[0];
-    if($data){
-      $device_param_name_id = $data['deviceParamNameID'];  
-    }
-    else{
-        return 9;
-    }    
-    $data1 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceParamNameID` = '$device_param_name_id' AND `deviceID` = '$device_id'")[0];
-    if($data1){
-      $device_param_value_id = $data1['deviceParamValueID'];
-    }
-    else{
-        return 9;
-    }
-    $data2 = $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$expiration_date' WHERE `deviceParamValueID` = '$device_param_value_id'");
-    if($data2){
-        return 0;
-    }
-    else{
-        return 9;
-    }
+   if(gettype($device_id) != "integer") {
+       return 10;
+   }
+   if($expiration_date == ""){
+       return 9;
+   }
+   $con = new Z_MySQL();
+   $device_param_name_id = EXPIRATION_DATE;
+   $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceParamNameID` = '$device_param_name_id' AND `deviceID` = '$device_id'")[0];
+   if($data){
+     $device_param_value_id = $data['deviceParamValueID'];
+     $data1 = $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$expiration_date' WHERE `deviceParamValueID` = '$device_param_value_id'");
+     return 0;
+   }
+   else{
+       return 9;
+   }
 }
