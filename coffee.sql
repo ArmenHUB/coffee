@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Окт 19 2018 г., 17:15
+-- Время создания: Окт 19 2018 г., 17:57
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -99,7 +99,7 @@ INSERT INTO `boards` (`boardID`, `UID`, `serialNumber`, `lastActivity`) VALUES
 (5, '555587345367576', '8547464546757511', '0000-00-00 00:00:00'),
 (6, '151111111555555555555555', '4191510991959198', '0000-00-00 00:00:00'),
 (16, '564565765675765675675765', '9742453754875395', '0000-00-00 00:00:00'),
-(17, '454545454545454545554545', '5636089479130356', '2018-12-24 16:15:35'),
+(17, '454545454545454545554545', '5636089479130356', '0000-00-00 00:00:00'),
 (20, '777777777777777777777777', '9000900090009000', '2018-10-24 16:15:35');
 
 -- --------------------------------------------------------
@@ -408,13 +408,6 @@ CREATE TABLE `loggedUsers` (
   `lastAction` timestamp NOT NULL,
   `token` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Дамп данных таблицы `loggedUsers`
---
-
-INSERT INTO `loggedUsers` (`userID`, `lastAction`, `token`) VALUES
-(1, '2018-10-19 13:46:23', 'bJe0XNPEzq');
 
 -- --------------------------------------------------------
 
@@ -910,7 +903,7 @@ ALTER TABLE `deviceParamNames`
 -- AUTO_INCREMENT для таблицы `deviceParamValues`
 --
 ALTER TABLE `deviceParamValues`
-  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT для таблицы `deviceTypes`
@@ -922,7 +915,7 @@ ALTER TABLE `deviceTypes`
 -- AUTO_INCREMENT для таблицы `deviceUsers`
 --
 ALTER TABLE `deviceUsers`
-  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT для таблицы `ingredients`
@@ -970,7 +963,7 @@ ALTER TABLE `userParamValues`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `vm_types`
