@@ -40,7 +40,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }
             break;
         case "user_add_edit":
-            $result = addEditUser($params->user_id, $params->username, $params->name, md5($params->password), $params->host, $params->user_type_id, $params->mail);
+            $result = addEditUser($income_data->user_id,$params->user_id, $params->username, $params->name, md5($params->password), $params->host, $params->user_type_id, $params->mail);
             if($result == 0){ // correctly added or edited
                 $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
@@ -50,7 +50,7 @@ if ($is_logged_normaly || $params->command === "login") {
         case "user_remove":
             $result = removeUser($params->user_id);
             if ($result == 0) { // correctly removed
-                $answer = ["token" => $income_data->token, "user_id" => $params->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             } else { // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             }
@@ -96,7 +96,7 @@ if ($is_logged_normaly || $params->command === "login") {
             }
             break;
         case "collector_list":
-            $result = collectorList($params->user_type_id, $income_data->host);
+            $result = collectorList($income_data->user_id,$params->user_type_id,$params->host);
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
@@ -237,7 +237,7 @@ function userList($user_type_id)// GET usertypeid, RETURN array userList
  * @param $mail
  * @return int
  */
-function addEditUser($user_id, $username, $name, $password, $host, $user_type_id, $mail)
+function addEditUser($owner_id,$user_id, $username, $name, $password, $host, $user_type_id, $mail)
 {
     if (gettype($user_id) != "integer") {
         return 7;
@@ -255,12 +255,26 @@ function addEditUser($user_id, $username, $name, $password, $host, $user_type_id
             return 4;
         } else {
             $password_random = createToken();
-            $data = $con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
-            if ($data) {
-                return 0;
-            } else {
-                return 4;
+            if($user_type_id == 3){
+                $data = $con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
+                $collector_id = $con->connection->insert_id;
+                $data1 = $con->queryDML("INSERT INTO `Owner_collectors` (`owner_id`,`collector_id`) VALUES ('$owner_id','$collector_id')");
+                if($data1){
+                    return 0;
+                }
+                else{
+                    return 4;
+                }
             }
+            else{
+                $data = $con->queryDML("INSERT INTO `users` (`username`,`password`,`host`,`userTypeID`,`email`,`name`) VALUES ('$username','$password_random','$host','$user_type_id','$mail','$name')");
+                if ($data) {
+                    return 0;
+                } else {
+                    return 4;
+                }
+            }
+
         }
     } else {
         $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
@@ -326,7 +340,6 @@ function removeUser($user_id)
 {
     if (gettype($user_id) != "integer") {
         return 7;
-        die();
     }
     $con = new Z_MySQL();
     $data = $con->queryNoDML("SELECT * FROM `users` WHERE  `userID`= '$user_id'");
@@ -397,18 +410,34 @@ function userInfo($user_id)
     }
 }
 
-function collectorList($user_type_id, $host)
+function collectorList($user_id,$user_type_id, $host)
 {
+//    if (gettype($user_id) != "integer") {
+//        return 7;
+//    }
     if ($user_type_id < 1 && $user_type_id > 3) {
         return 8;
     }
-    if ($host == "") {//@TODO CHECK SAME USERNAME  //@todo check host
+    if ($host == "") {
         return 9;
     }
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `userID` AS user_id,`name` FROM `users` WHERE  `userTypeID`= '$user_type_id' AND `host` = '$host'");
-    if ($data) {
-        return $data;
-    } else {
+    $arr = array();
+    $data = $con->queryNoDML("SELECT `collector_id` AS `collector_id`  FROM `Owner_collectors` WHERE  `owner_id`= '$user_id'");
+    if($data){
+        foreach ($data as $key => $value) {
+            $arr1 = array();
+            $collector_id = $value['collector_id'];
+            $data1 = $con->queryNoDML("SELECT `userID` AS user_id,`name` AS name FROM `users` WHERE  `userID`= '$collector_id' AND `host` = '$host'");
+            $user_id = $data1[0]['user_id'];
+            $name = $data1[0]['name'];
+            $arr1['user_id'] = $user_id;
+            $arr1['name'] = $name;
+            array_push($arr, $arr1);
+        }
+        return $arr;
+    }
+    else{
         return 8;
     }
+}
