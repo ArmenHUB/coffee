@@ -18,7 +18,7 @@ if ($is_logged_normaly) {
 switch ($params->command) {
 
     case "device_list":
-        $result = getDeviceList($params->owner_id);
+        $result = getDeviceList($income_data->user_id);
         if (gettype($result) == 'integer') { // return error number
             $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
         } else {
@@ -35,7 +35,7 @@ switch ($params->command) {
         break;
     case "device_add_edit":
         $data = $params->data;
-        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->name, $params->address, $params->vm_type_id, $params->coordinates, $params->expiration_date,$params->serial_number);
+        $result = addEditDevice($income_data->user_id,$income_data->lang_id,$params->device_id, $params->device_name, $params->address, $params->vm_type_id, $params->coordinates, $params->expiration_date,$params->serial_number);
         if ($result == 0) { // reset password ok
             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
         } else { // returned error number
@@ -108,21 +108,21 @@ function checkUser($user_id, $token)
  * @param $owner_id
  * @return array|int
  */
-function getDeviceList($owner_id)
+function getDeviceList($user_id)
 {
-    if (gettype($owner_id) != "integer") {
+    if (gettype((int)$user_id) != "integer") {
         return 7;
     }
     $arr1 = array();
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$owner_id'")[0];
+    $data = $con->queryNoDML("SELECT `userTypeID` FROM `users` WHERE `userID` = '$user_id'")[0];
     if($data['userTypeID'] == 2){
-        $data1 = $con->queryNoDML("SELECT `deviceID` FROM deviceUsers WHERE `userID` = '$owner_id'");
+        $data1 = $con->queryNoDML("SELECT `deviceID` FROM deviceUsers WHERE `userID` = '$user_id'");
         $arr_param_name_id = [NAME,ADDRESS,SUM,STATUS,LOCATION,MAP_ICON];
         if($data1){
             foreach ($data1 as $key => $value) {
                 $device_id = $value['deviceID'];
-                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamNames`.`text` AS DeviceParamName,`deviceParamValues`.`text` AS DeviceParamValue,`vm_types`.`name` AS Model,`vm_types`.`vm_type_id` AS DeviceTypeID FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `vm_types` ON `vm_types`.`vm_type_id` = `deviceInfo`.`deviceTypeID`  WHERE   `deviceParamNames`.`deviceParamNameID` IN ($arr_param_name_id[0],$arr_param_name_id[1],$arr_param_name_id[2],$arr_param_name_id[3],$arr_param_name_id[4],$arr_param_name_id[5]) AND `deviceInfo`.`deviceID` = '$device_id'");
+                $data2 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`deviceParamNames`.`text` AS DeviceParamName,`deviceParamValues`.`text` AS DeviceParamValue,`vm_types`.`name` AS Model,`deviceInfo`.`vm_type_id` AS DeviceTypeID FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `vm_types` ON `vm_types`.`vm_type_id` = `deviceInfo`.`vm_type_id`  WHERE   `deviceParamNames`.`deviceParamNameID` IN ($arr_param_name_id[0],$arr_param_name_id[1],$arr_param_name_id[2],$arr_param_name_id[3],$arr_param_name_id[4],$arr_param_name_id[5]) AND `deviceInfo`.`deviceID` = '$device_id'");
                 if($data2){
                     $arr = array();
                     foreach ($data2 as $key1 => $value1) {
@@ -156,11 +156,12 @@ function deviceInfo($device_id)
     $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'")[0];
     $arr_param_name_id = [NAME,ADDRESS,SUM,STATUS,LOCATION,MAP_ICON];
     if($data['deviceID'] > 0){
-        $data1 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`vm_types`.`name` AS DeviceTypeName,`deviceParamNames`.`text` AS DeviceParamsNames,`deviceParamValues`.`text` AS DeviceParamsValues FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `vm_types` ON `vm_types`.`vm_type_id` = `deviceInfo`.`deviceTypeID` WHERE  `deviceInfo`.`deviceID` = '$device_id'  AND `deviceParamNames`.`deviceParamNameID` IN ($arr_param_name_id[4],$arr_param_name_id[0],$arr_param_name_id[1],$arr_param_name_id[3])");
+        $data1 = $con->queryNoDML("SELECT `deviceInfo`.`deviceID` AS DeviceID,`vm_types`.`name` AS DeviceTypeName,`deviceInfo`.`vm_type_id` AS Vm_type_id,`deviceParamNames`.`text` AS DeviceParamsNames,`deviceParamValues`.`text` AS DeviceParamsValues FROM `deviceInfo` INNER JOIN `deviceParamNames` ON `deviceInfo`.`deviceParamNameID` = `deviceParamNames`.`deviceParamNameID` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `vm_types` ON `vm_types`.`vm_type_id` = `deviceInfo`.`vm_type_id` WHERE  `deviceInfo`.`deviceID` = '$device_id'  AND `deviceParamNames`.`deviceParamNameID` IN ($arr_param_name_id[4],$arr_param_name_id[0],$arr_param_name_id[1],$arr_param_name_id[3])");
         if($data1){
             $arr = array();
             foreach ($data1 as $key1 => $value1) {
                 $device_param_name = $value1['DeviceParamsNames'];
+                $arr['vm_type_id'] = $value1['Vm_type_id'];
                 $arr['device_id'] = $value1['DeviceID'];
                 $arr['device_model'] =  $value1['DeviceTypeName'];
                 $arr[$device_param_name] =  $value1['DeviceParamsValues'];
@@ -189,26 +190,27 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
     if (gettype($device_id) != "integer") {
         return 10;
     }
-//    if ($name == "" || $address == "" || $device_type_id == "" || $location == ""){
-//        return 9;
-//    }
+    if ($name == "" || $address == "" || $device_type_id == "" || $location == ""){
+        return 9;
+    }
     $con = new Z_MySQL();
     $arr_param_name_id = [NAME,LOCATION,ADDRESS,EXPIRATION_DATE,STATUS,MAP_ICON];
     if($expiration_date !== ""){
         if($device_id == 0){
-            $status = 2;
-            $map_icon = "images/loacation_icon_error.png";
+            $location_xy = implode("-",$location);
+            $status = STATUS_VALUE;
+            $map_icon = MAP_ICON_VALUE;
+            $serial_number_string = implode("",$serial_number);
             $data2 = array();
-            $data1= $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`deviceTypeID`) VALUES ('$user_id','$device_type_id')");
+            $data1= $con->queryDML("INSERT INTO `deviceUsers` (`userID`,`vm_type_id`) VALUES ('$user_id','$device_type_id')");
             if($data1){
                 $device_id = $con->connection->insert_id;
                 // Add boardDevice
-                $data_board = $con->queryNoDML("SELECT `boardID` FROM `boards` WHERE `serialNumber` = '$serial_number'")[0];
+                $data_board = $con->queryNoDML("SELECT `boardID` FROM `boards` WHERE `serialNumber` = '$serial_number_string'")[0];
                 $board_id = $data_board['boardID'];
                 $con->queryDML("INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES ('$device_id', '$board_id')");
-
                 //Add device values
-                $arr_dev_val = array($name,$location,$address,$expiration_date);
+                $arr_dev_val = array($name,$location_xy,$address,$expiration_date);
                 $arr_dev_val_1 = array($status,$map_icon);
                 for ($i=0; $i < count($arr_dev_val); $i++) {
                     $con->queryDML("INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES (NULL, ' $arr_dev_val[$i]')");
@@ -224,21 +226,10 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
                         $data2[5] = $device_param_value_id;
                     }
                 }
-                // DeviceParamValues
-                $val_id1 = $data2[0];//Name
-                $val_id2 = $data2[1];//Location
-                $val_id3 = $data2[2];//Address
-                $val_id4 = $data2[3];//Exp_date
-                $val_id5 = $data2[4];//Status
-                $val_id6 = $data2[5];//Map_icon
-                // DeviceParamNames
-                $name_id1 = $arr_param_name_id[0];//Name
-                $name_id2 = $arr_param_name_id[1];//Location
-                $name_id3 = $arr_param_name_id[2];//Address
-                $name_id4 = $arr_param_name_id[3];//Exp_date
-                $name_id5 = $arr_param_name_id[4];//Status
-                $name_id6 = $arr_param_name_id[5];//Map_icon
-                $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`deviceTypeID`) VALUES ('$device_id','$name_id1','$val_id1','$device_type_id'), ('$device_id','$name_id2','$val_id2','$device_type_id'), ('$device_id','$name_id3','$val_id3','$device_type_id'),('$device_id','$name_id4','$val_id4','$device_type_id'),('$device_id','$name_id5','$val_id5','$device_type_id'),('$device_id','$name_id6','$val_id6','$device_type_id')");
+                for ($i=0; $i < 6; $i++) {
+                    $data4=$con->queryDML("INSERT INTO `deviceInfo` (`deviceID`,`deviceParamNameID`,`deviceParamValueID`,`vm_type_id`) VALUES ('$device_id','$arr_param_name_id[$i]','$data2[$i]','$device_type_id')");
+                }
+
                 if($data4){
                     return 0;
                 }
@@ -250,21 +241,22 @@ function addEditDevice($user_id,$lang_id,$device_id, $name, $address, $device_ty
     }
     else{
         $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceInfo` WHERE `deviceID` = '$device_id'");
+        $location_xy = implode("-",$location);
         if($data){
             $arr_param_name_id = [NAME,LOCATION,ADDRESS];
-            $data1 = $con->queryNoDML("UPDATE `deviceInfo` SET `deviceTypeID` = '$device_type_id' WHERE `deviceID` = '$device_id'");
-            $data2 = $con->queryNoDML("UPDATE `deviceUsers` SET `deviceTypeID` = '$device_type_id' WHERE `deviceID` = '$device_id'");
-            if(empty($data1) && empty($data2)){
-                $array_values = array($name,$location,$address);
-                for ($i=0; $i < 3; $i++) {
-                    $data3 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id' AND `deviceParamNameID` = '$arr_param_name_id[$i]'")[0]['deviceParamValueID'];
-                    $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$data3'");
-                }
-                return 0;
+            $data1 = $con->queryNoDML("UPDATE `deviceInfo` SET `vm_type_id` = '$device_type_id' WHERE `deviceID` = '$device_id'");
+            $data2 = $con->queryNoDML("UPDATE `deviceUsers` SET `vm_type_id` = '$device_type_id' WHERE `deviceID` = '$device_id'");
+            //if($data1 && $data2){
+            $array_values = array($name,$location_xy,$address);
+            for ($i=0; $i < 3; $i++) {
+                $data3 = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceID` = '$device_id' AND `deviceParamNameID` = '$arr_param_name_id[$i]'")[0]['deviceParamValueID'];
+                $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$array_values[$i]' WHERE `deviceParamValueID` = '$data3'");
             }
-            else{
-                return 44;
-            }
+            return 0;
+            // }
+            // else{
+            //    return 44;
+            // }
         }
         else{
             return 4;
@@ -286,33 +278,47 @@ function deviceListStatusExpiration($owner_id)
     if($owner_id == 0){
         $data = $con->queryNoDML("SELECT `boardDevice`.`deviceID` AS device_id,`boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity FROM `boardDevice` RIGHT JOIN `boards` ON `boardDevice`.`boardID` = `boards`.`boardID`");
         $arr1 = array();
-        foreach ($data as $key => $value) {
-            if(empty($value['device_id'])){
-                $arr1['device_id'] = "NULL";
-                $arr1['UID'] = $value['UID'];
-                $arr1['serial_number'] = $value['serialNumber'];
-                $arr1['last_activity'] = $value['lastActivity'];
-                $arr1['expiration_date'] = 'NULL';
-                $arr1['status'] = 2;
-                $arr1['owner_name'] = 'NULL';
-                array_push($arr,$arr1);
-            }
-            else{
-                $device_id=$value['device_id'];
-                $u_id = $value['UID'];
-                $serial_number = $value['serialNumber'];
-                $last_activity = $value['lastActivity'];
-                $data1 = $con->queryNoDML("SELECT `deviceParamNames`.`text` AS Device_param_name,`deviceParamValues`.`text` AS Device_param_value, `users`.`name` AS Name FROM `deviceInfo` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `deviceInfo`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceParamNames` ON `deviceParamNames`.`deviceParamNameID` = `deviceInfo`.`deviceParamNameID` WHERE `deviceInfo`.`deviceID` = '$device_id'  AND `deviceInfo`.`deviceParamNameID` IN($arr_param_name_id[0],$arr_param_name_id[1]) AND `users`.`userTypeID` = '2'");
-                foreach ($data1 as $key1 => $value1) {
-                    $arr1['device_id'] = $device_id;
-                    $arr1['UID'] = $u_id;
-                    $arr1['serial_number'] = $serial_number;
-                    $arr1['last_activity'] = $last_activity;
-                    $device_param_name = $value1['Device_param_name'];
-                    $arr1[$device_param_name] =  $value1['Device_param_value'];
-                    $arr1['owner_name'] =  $value1['Name'];
+        if(!empty($data)) {
+            foreach ($data as $key => $value) {
+                if (empty($value['device_id'])) {
+                    $arr1['device_id'] = "NULL";
+                    $arr1['UID'] = $value['UID'];
+                    $arr1['serial_number'] = $value['serialNumber'];
+                    $last_activity = $value['lastActivity'];
+                    if($last_activity == "0000-00-00 00:00:00"){
+                        $last_activity_1 = "NULL";
+                    }
+                    else{
+                        $last_activity_1 =  $last_activity;
+                    }
+                    $arr1['last_activity'] = $last_activity_1;
+                    $arr1['expiration_date'] = 'NULL';
+                    $arr1['status'] = 2;
+                    $arr1['owner_name'] = 'NULL';
+                    array_push($arr, $arr1);
+                } else {
+                    $device_id = $value['device_id'];
+                    $u_id = $value['UID'];
+                    $serial_number = $value['serialNumber'];
+                    $last_activity = $value['lastActivity'];
+                    $data1 = $con->queryNoDML("SELECT `deviceParamNames`.`text` AS Device_param_name,`deviceParamValues`.`text` AS Device_param_value, `users`.`name` AS Name FROM `deviceInfo` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `deviceInfo`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceParamNames` ON `deviceParamNames`.`deviceParamNameID` = `deviceInfo`.`deviceParamNameID` WHERE `deviceInfo`.`deviceID` = '$device_id'  AND `deviceInfo`.`deviceParamNameID` IN($arr_param_name_id[0],$arr_param_name_id[1]) AND `users`.`userTypeID` = '2'");
+                    foreach ($data1 as $key1 => $value1) {
+                        $arr1['device_id'] = $device_id;
+                        $arr1['UID'] = $u_id;
+                        $arr1['serial_number'] = $serial_number;
+                        if($last_activity == "0000-00-00 00:00:00"){
+                            $last_activity_1 = "NULL";
+                        }
+                        else{
+                            $last_activity_1 =  $last_activity;
+                        }
+                        $arr1['last_activity'] = $last_activity_1;
+                        $device_param_name = $value1['Device_param_name'];
+                        $arr1[$device_param_name] = $value1['Device_param_value'];
+                        $arr1['owner_name'] = $value1['Name'];
+                    }
+                    array_push($arr, $arr1);
                 }
-                array_push($arr,$arr1);
             }
         }
         return $arr;
@@ -321,15 +327,17 @@ function deviceListStatusExpiration($owner_id)
         $arr1 = array();
         $data = $con->queryNoDML("SELECT `UID`,`serialNumber` FROM `boards` WHERE `boardID` NOT IN (SELECT `boards`.`boardID` AS boardID FROM `boards` INNER JOIN `boardDevice` ON `boards`.`boardID` = `boardDevice`.`boardID`)");
         if($data){
-            foreach ($data as $key => $value) {
-                $arr1['device_id'] = "NULL";
-                $arr1['UID'] = $value['UID'];
-                $arr1['serial_number'] = $value['serialNumber'];
-                $arr1['last_activity'] = 'NULL';
-                $arr1['expiration_date'] = 'NULL';
-                $arr1['status'] = 2;
-                $arr1['owner_name'] = 'NULL';
-                array_push($arr,$arr1);
+            if(!empty($data)) {
+                foreach ($data as $key => $value) {
+                    $arr1['device_id'] = "NULL";
+                    $arr1['UID'] = $value['UID'];
+                    $arr1['serial_number'] = $value['serialNumber'];
+                    $arr1['last_activity'] = 'NULL';
+                    $arr1['expiration_date'] = 'NULL';
+                    $arr1['status'] = 2;
+                    $arr1['owner_name'] = 'NULL';
+                    array_push($arr, $arr1);
+                }
             }
             return $arr;
         }
@@ -340,22 +348,24 @@ function deviceListStatusExpiration($owner_id)
     else{
         $data = $con->queryNoDML("SELECT `boardDevice`.`deviceID` AS device_id,`boards`.`UID` AS UID,`boards`.`serialNumber` AS serialNumber,`boards`.`lastActivity` AS lastActivity FROM `boardDevice` INNER JOIN `boards` ON `boardDevice`.`boardID` = `boards`.`boardID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `boardDevice`.`deviceID` WHERE `deviceUsers`.`userID` = '$owner_id'");
         $arr1 = array();
-        foreach ($data as $key => $value) {
-            $device_id=$value['device_id'];
-            $u_id = $value['UID'];
-            $serial_number = $value['serialNumber'];
-            $last_activity = $value['lastActivity'];
-            $data1 = $con->queryNoDML("SELECT `deviceParamNames`.`text` AS Device_param_name,`deviceParamValues`.`text` AS Device_param_value, `users`.`name` AS Name FROM `deviceInfo` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `deviceInfo`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceParamNames` ON `deviceParamNames`.`deviceParamNameID` = `deviceInfo`.`deviceParamNameID` WHERE `deviceInfo`.`deviceID` = '$device_id' AND `deviceInfo`.`deviceParamNameID` IN($arr_param_name_id[0],$arr_param_name_id[1]) AND `users`.`userID` = '$owner_id'");
-            foreach ($data1 as $key1 => $value1) {
-                $arr1['device_id'] = $device_id;
-                $arr1['UID'] = $u_id;
-                $arr1['serial_number'] = $serial_number;
-                $arr1['last_activity'] = $last_activity;
-                $device_param_name = $value1['Device_param_name'];
-                $arr1[$device_param_name] = $value1['Device_param_value'];
-                $arr1['owner_name'] = $value1['Name'];
+        if(!empty($data)) {
+            foreach ($data as $key => $value) {
+                $device_id = $value['device_id'];
+                $u_id = $value['UID'];
+                $serial_number = $value['serialNumber'];
+                $last_activity = $value['lastActivity'];
+                $data1 = $con->queryNoDML("SELECT `deviceParamNames`.`text` AS Device_param_name,`deviceParamValues`.`text` AS Device_param_value, `users`.`name` AS Name FROM `deviceInfo` INNER JOIN `deviceParamValues` ON `deviceInfo`.`deviceParamValueID` = `deviceParamValues`.`deviceParamValueID` INNER JOIN `deviceUsers` ON `deviceUsers`.`deviceID` = `deviceInfo`.`deviceID` INNER JOIN `users` ON `users`.`userID` = `deviceUsers`.`userID` INNER JOIN `deviceParamNames` ON `deviceParamNames`.`deviceParamNameID` = `deviceInfo`.`deviceParamNameID` WHERE `deviceInfo`.`deviceID` = '$device_id' AND `deviceInfo`.`deviceParamNameID` IN($arr_param_name_id[0],$arr_param_name_id[1]) AND `users`.`userID` = '$owner_id'");
+                foreach ($data1 as $key1 => $value1) {
+                    $arr1['device_id'] = $device_id;
+                    $arr1['UID'] = $u_id;
+                    $arr1['serial_number'] = $serial_number;
+                    $arr1['last_activity'] = $last_activity;
+                    $device_param_name = $value1['Device_param_name'];
+                    $arr1[$device_param_name] = $value1['Device_param_value'];
+                    $arr1['owner_name'] = $value1['Name'];
+                }
+                array_push($arr, $arr1);
             }
-            array_push($arr,$arr1);
         }
         return $arr;
     }
@@ -371,16 +381,18 @@ function removeDevice($device_id)
         die();
     }
     $con = new Z_MySQL();
-    $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE  `deviceID`= '$device_id'");
+    $status = STATUS;
+    $map_icon = MAP_ICON;
+    $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE  `deviceID`= '$device_id' AND `deviceParamNameID` NOT IN ($status,$map_icon)");
     if($data){
-       $con->queryDML("DELETE FROM `deviceInfo` WHERE `deviceID`= '$device_id'");
-       $con->queryDML("DELETE FROM `deviceUsers` WHERE `deviceID`= '$device_id'");
-       $con->queryDML("DELETE FROM `boardDevice` WHERE `deviceID`= '$device_id'");
-       foreach ($data as $key => $value) {
-          $device_param_value_id = $value['deviceParamValueID'];
-          $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");
-       }
-      return 0;
+        $con->queryDML("DELETE FROM `deviceInfo` WHERE `deviceID`= '$device_id'");
+        $con->queryDML("DELETE FROM `deviceUsers` WHERE `deviceID`= '$device_id'");
+        $con->queryDML("DELETE FROM `boardDevice` WHERE `deviceID`= '$device_id'");
+        foreach ($data as $key => $value) {
+            $device_param_value_id = $value['deviceParamValueID'];
+            $con->queryDML("DELETE FROM `deviceParamValues` WHERE `deviceParamValueID`= '$device_param_value_id'");
+        }
+        return 0;
     }
     else{
         return 7;
