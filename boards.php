@@ -20,7 +20,7 @@ if ($is_logged_normaly) {
             if (gettype($result) == 'integer') { // return error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
             } else {
-                $answer = ["token" => $result["token"], "user_id" =>  $result["user_id"], "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }
             break;
         case "check_serial_number":
@@ -34,13 +34,17 @@ if ($is_logged_normaly) {
         case "expiration_date_edit":
             $result = expirationDateEdit($params->device_id,$params->expiration_date);
             if($result == 0){ // reset password ok
-             $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
+                $answer = ["token" => $income_data->token, "user_id" => $income_data->user_id, "error" => 0, "lang_id" => $income_data->lang_id, "info" => $result];
             }else{ // returned error number
                 $answer = ["token" => T_ERROR, "user_id" => 0, "error" => $result, "lang_id" => $income_data->lang_id, "info" => []];
-            } 
+            }
+
             break;
     }
-}    
+}
+if ($answer['error'] > 0) {
+    $answer['error'] = getError($answer['error'], $income_data->lang_id);
+}
 echo json_encode($answer);
 /**
  * @param $user_id
@@ -64,6 +68,7 @@ function checkUser($user_id, $token)
     }
     return false;
 }
+
 /**
  * @param $UID
  * @return array|int
@@ -72,24 +77,26 @@ function addBoard($UID)
 {
     if (strlen($UID) < 24) {
         return 8;
-        die();
     }
     $con = new Z_MySQL();
     $serial_number = random_serial_number();
-    $lastActivity = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
+    $lastActivity = "0000-00-00 00:00:00";
+    //$lastActivity = $con->queryNoDML("SELECT CURRENT_TIMESTAMP() AS 'time'")[0]["time"];
     $data = $con->queryDML("INSERT INTO `boards` (`boardID`,`UID`,`serialNumber`,`lastActivity`) VALUES (NULL,'$UID','$serial_number','$lastActivity')");
     if($data){
-        $piece_1 = substr($serial_number, 0, 4);   
-        $piece_2 = substr($serial_number, 4, 4); 
-        $piece_3 = substr($serial_number, 8, 4); 
+        $piece_1 = substr($serial_number, 0, 4);
+        $piece_2 = substr($serial_number, 4, 4);
+        $piece_3 = substr($serial_number, 8, 4);
         $piece_4 = substr($serial_number, 12, 4);
         $serial_number_array=array($piece_1,$piece_2,$piece_3,$piece_4);
         return $serial_number_array;
     }
     else{
-       return 9;
+        return 9;
     }
 }
+
+
 /**
  * @brief create session key
  * @return string -  random generated number
@@ -127,21 +134,19 @@ function checkSerialNumber($serial_number){
  * @return int
  */
 function expirationDateEdit($device_id,$expiration_date){
-   if(gettype($device_id) != "integer") {
-       return 10;
-   }
-   if($expiration_date == ""){
-       return 9;
-   }
-   $con = new Z_MySQL();
-   $device_param_name_id = EXPIRATION_DATE;
-   $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceParamNameID` = '$device_param_name_id' AND `deviceID` = '$device_id'")[0];
-   if($data){
-     $device_param_value_id = $data['deviceParamValueID'];
-     $data1 = $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$expiration_date' WHERE `deviceParamValueID` = '$device_param_value_id'");
-     return 0;
-   }
-   else{
-       return 9;
-   }
+
+    if($expiration_date == ""){
+        return 9;
+    }
+    $con = new Z_MySQL();
+    $device_param_name_id = EXPIRATION_DATE;
+    $data = $con->queryNoDML("SELECT `deviceParamValueID` FROM `deviceInfo` WHERE `deviceParamNameID` = '$device_param_name_id' AND `deviceID` = '$device_id'")[0];
+    if($data){
+        $device_param_value_id = $data['deviceParamValueID'];
+        $data1 = $con->queryDML("UPDATE `deviceParamValues` SET `text` = '$expiration_date' WHERE `deviceParamValueID` = '$device_param_value_id'");
+        return 0;
+    }
+    else{
+        return 9;
+    }
 }
