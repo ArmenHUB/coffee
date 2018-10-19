@@ -2,10 +2,10 @@
 -- version 4.7.7
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Oct 08, 2018 at 03:51 PM
--- Server version: 5.6.38
--- PHP Version: 5.5.38
+-- Хост: 127.0.0.1:3306
+-- Время создания: Окт 19 2018 г., 17:15
+-- Версия сервера: 5.7.20
+-- Версия PHP: 7.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `Coffee`
+-- База данных: `Coffee`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `action_log`
+-- Структура таблицы `action_log`
 --
 
 CREATE TABLE `action_log` (
@@ -38,7 +38,7 @@ CREATE TABLE `action_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `action_log`
+-- Дамп данных таблицы `action_log`
 --
 
 INSERT INTO `action_log` (`deviceID`, `ingredientsID`, `count`, `measurement_unitsID`, `type`, `timestamp`) VALUES
@@ -58,7 +58,7 @@ INSERT INTO `action_log` (`deviceID`, `ingredientsID`, `count`, `measurement_uni
 -- --------------------------------------------------------
 
 --
--- Table structure for table `boardDevice`
+-- Структура таблицы `boardDevice`
 --
 
 CREATE TABLE `boardDevice` (
@@ -67,18 +67,19 @@ CREATE TABLE `boardDevice` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `boardDevice`
+-- Дамп данных таблицы `boardDevice`
 --
 
 INSERT INTO `boardDevice` (`deviceID`, `boardID`) VALUES
 (1, 1),
 (2, 3),
-(3, 4);
+(3, 4),
+(4, 20);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `boards`
+-- Структура таблицы `boards`
 --
 
 CREATE TABLE `boards` (
@@ -89,21 +90,22 @@ CREATE TABLE `boards` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `boards`
+-- Дамп данных таблицы `boards`
 --
 
 INSERT INTO `boards` (`boardID`, `UID`, `serialNumber`, `lastActivity`) VALUES
 (1, '991901212499190121111256', '5555555555555555', '2018-09-11 12:44:40'),
 (4, '365687345367576', '4444444444444444', '2018-09-11 12:44:40'),
-(5, '555587345367576', '8547464546757511', '2018-09-11 12:48:40'),
-(6, '151111111555555555555555', '4191510991959198', '2018-09-24 16:15:35'),
+(5, '555587345367576', '8547464546757511', '0000-00-00 00:00:00'),
+(6, '151111111555555555555555', '4191510991959198', '0000-00-00 00:00:00'),
 (16, '564565765675765675675765', '9742453754875395', '0000-00-00 00:00:00'),
-(17, '454545454545454545554545', '5636089479130356', '0000-00-00 00:00:00');
+(17, '454545454545454545554545', '5636089479130356', '2018-12-24 16:15:35'),
+(20, '777777777777777777777777', '9000900090009000', '2018-10-24 16:15:35');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deviceInfo`
+-- Структура таблицы `deviceInfo`
 --
 
 CREATE TABLE `deviceInfo` (
@@ -114,31 +116,37 @@ CREATE TABLE `deviceInfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `deviceInfo`
+-- Дамп данных таблицы `deviceInfo`
 --
 
 INSERT INTO `deviceInfo` (`deviceID`, `deviceParamNameID`, `deviceParamValueID`, `vm_type_id`) VALUES
-(1, 1, 1, 14),
-(1, 3, 3, 14),
-(1, 4, 4, 14),
-(1, 5, 5, 14),
-(1, 7, 7, 14),
+(1, 1, 1, 2),
+(1, 3, 3, 2),
+(1, 4, 4, 2),
+(1, 5, 5, 2),
+(1, 7, 7, 2),
 (2, 7, 8, 2),
-(3, 7, 9, 14),
-(3, 3, 10, 14),
-(1, 8, 11, 14),
-(3, 4, 13, 14),
-(3, 8, 12, 14),
-(3, 5, 14, 14),
-(1, 9, 16, 14),
-(3, 1, 19, 14),
-(3, 9, 17, 14),
-(2, 5, 18, 2);
+(3, 7, 9, 17),
+(3, 3, 10, 17),
+(1, 8, 11, 2),
+(3, 4, 13, 17),
+(3, 8, 12, 17),
+(3, 5, 14, 17),
+(1, 9, 16, 2),
+(3, 1, 19, 17),
+(3, 9, 17, 17),
+(2, 5, 18, 2),
+(4, 3, 20, 3),
+(4, 1, 21, 3),
+(4, 4, 22, 3),
+(4, 7, 23, 3),
+(4, 5, 14, 3),
+(4, 9, 17, 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deviceParamNames`
+-- Структура таблицы `deviceParamNames`
 --
 
 CREATE TABLE `deviceParamNames` (
@@ -148,7 +156,7 @@ CREATE TABLE `deviceParamNames` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `deviceParamNames`
+-- Дамп данных таблицы `deviceParamNames`
 --
 
 INSERT INTO `deviceParamNames` (`deviceParamNameID`, `langID`, `text`) VALUES
@@ -163,7 +171,7 @@ INSERT INTO `deviceParamNames` (`deviceParamNameID`, `langID`, `text`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deviceParamValues`
+-- Структура таблицы `deviceParamValues`
 --
 
 CREATE TABLE `deviceParamValues` (
@@ -172,32 +180,36 @@ CREATE TABLE `deviceParamValues` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `deviceParamValues`
+-- Дамп данных таблицы `deviceParamValues`
 --
 
 INSERT INTO `deviceParamValues` (`deviceParamValueID`, `text`) VALUES
-(1, '40.179575052100255-44.516851878356874'),
-(3, 'Apple A121000'),
-(4, 'Sebastia Street1000'),
+(1, '40.186755340918175-44.5271944763183'),
+(3, 'Apple A12'),
+(4, 'Sebastia Street10'),
 (5, '1'),
-(7, '2020-07-13 08:00:99'),
+(7, '2020/9/22'),
 (8, '2021-05-17 09:00:00'),
 (9, '2009-07-19 09:33:00'),
-(10, 'Samsung'),
+(10, 'SamsungS9'),
 (11, '4500'),
 (12, '6500'),
-(13, 'Ara ter Sargsyan 20/1'),
+(13, 'Ara ter Sargsyan 30/1'),
 (14, '2'),
 (15, 'images/loacation_icon_active.png'),
 (16, 'images/loacation_icon_warning.png'),
 (17, 'images/loacation_icon_error.png'),
 (18, '1'),
-(19, '12.16.12.16');
+(19, '-12.16.12.16'),
+(20, ' OOP'),
+(21, ' 40.18078821360807-44.51114413757318'),
+(22, ' Baxramyan 13'),
+(23, ' 11/19/2018');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deviceTypes`
+-- Структура таблицы `deviceTypes`
 --
 
 CREATE TABLE `deviceTypes` (
@@ -208,7 +220,7 @@ CREATE TABLE `deviceTypes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `deviceTypes`
+-- Дамп данных таблицы `deviceTypes`
 --
 
 INSERT INTO `deviceTypes` (`deviceTypeID`, `langID`, `text`, `image`) VALUES
@@ -218,7 +230,7 @@ INSERT INTO `deviceTypes` (`deviceTypeID`, `langID`, `text`, `image`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deviceUsers`
+-- Структура таблицы `deviceUsers`
 --
 
 CREATE TABLE `deviceUsers` (
@@ -228,18 +240,19 @@ CREATE TABLE `deviceUsers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `deviceUsers`
+-- Дамп данных таблицы `deviceUsers`
 --
 
 INSERT INTO `deviceUsers` (`deviceID`, `userID`, `vm_type_id`) VALUES
-(1, 1, 14),
+(1, 1, 2),
 (2, 3, 2),
-(3, 1, 2);
+(3, 1, 17),
+(4, 14, 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `errors`
+-- Структура таблицы `errors`
 --
 
 CREATE TABLE `errors` (
@@ -249,7 +262,7 @@ CREATE TABLE `errors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `errors`
+-- Дамп данных таблицы `errors`
 --
 
 INSERT INTO `errors` (`errorID`, `text`, `langID`) VALUES
@@ -293,7 +306,7 @@ INSERT INTO `errors` (`errorID`, `text`, `langID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `eventType`
+-- Структура таблицы `eventType`
 --
 
 CREATE TABLE `eventType` (
@@ -302,7 +315,7 @@ CREATE TABLE `eventType` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `eventType`
+-- Дамп данных таблицы `eventType`
 --
 
 INSERT INTO `eventType` (`eventTypeID`, `text`) VALUES
@@ -313,7 +326,7 @@ INSERT INTO `eventType` (`eventTypeID`, `text`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ingredients`
+-- Структура таблицы `ingredients`
 --
 
 CREATE TABLE `ingredients` (
@@ -324,7 +337,7 @@ CREATE TABLE `ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `ingredients`
+-- Дамп данных таблицы `ingredients`
 --
 
 INSERT INTO `ingredients` (`ingredientsID`, `ingredientNameID`, `unitVending`, `unitCollector`) VALUES
@@ -343,12 +356,15 @@ INSERT INTO `ingredients` (`ingredientsID`, `ingredientNameID`, `unitVending`, `
 (21, 5, '0', '0'),
 (22, 3, '0', '0'),
 (23, 5, '0', '0'),
-(24, 7, '0', '0');
+(24, 7, '0', '0'),
+(25, 3, '0', '0'),
+(26, 5, '0', '0'),
+(27, 7, '0', '0');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ingredientsName`
+-- Структура таблицы `ingredientsName`
 --
 
 CREATE TABLE `ingredientsName` (
@@ -358,7 +374,7 @@ CREATE TABLE `ingredientsName` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `ingredientsName`
+-- Дамп данных таблицы `ingredientsName`
 --
 
 INSERT INTO `ingredientsName` (`ingredientsNameID`, `text`, `langID`) VALUES
@@ -373,7 +389,7 @@ INSERT INTO `ingredientsName` (`ingredientsNameID`, `text`, `langID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `languages`
+-- Структура таблицы `languages`
 --
 
 CREATE TABLE `languages` (
@@ -384,7 +400,7 @@ CREATE TABLE `languages` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `loggedUsers`
+-- Структура таблицы `loggedUsers`
 --
 
 CREATE TABLE `loggedUsers` (
@@ -394,16 +410,16 @@ CREATE TABLE `loggedUsers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `loggedUsers`
+-- Дамп данных таблицы `loggedUsers`
 --
 
 INSERT INTO `loggedUsers` (`userID`, `lastAction`, `token`) VALUES
-(1, '2018-10-08 11:09:25', 'tjpmMjNRm4');
+(1, '2018-10-19 13:46:23', 'bJe0XNPEzq');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `logs`
+-- Структура таблицы `logs`
 --
 
 CREATE TABLE `logs` (
@@ -417,7 +433,7 @@ CREATE TABLE `logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `logs`
+-- Дамп данных таблицы `logs`
 --
 
 INSERT INTO `logs` (`id`, `timestamp`, `eventTypeID`, `userID`, `module`, `event`, `deviceID`) VALUES
@@ -437,7 +453,7 @@ INSERT INTO `logs` (`id`, `timestamp`, `eventTypeID`, `userID`, `module`, `event
 -- --------------------------------------------------------
 
 --
--- Table structure for table `measurement_units`
+-- Структура таблицы `measurement_units`
 --
 
 CREATE TABLE `measurement_units` (
@@ -447,7 +463,7 @@ CREATE TABLE `measurement_units` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `measurement_units`
+-- Дамп данных таблицы `measurement_units`
 --
 
 INSERT INTO `measurement_units` (`measurement_unitsID`, `text`, `langID`) VALUES
@@ -461,7 +477,7 @@ INSERT INTO `measurement_units` (`measurement_unitsID`, `text`, `langID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `menu`
+-- Структура таблицы `menu`
 --
 
 CREATE TABLE `menu` (
@@ -474,7 +490,7 @@ CREATE TABLE `menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `menu`
+-- Дамп данных таблицы `menu`
 --
 
 INSERT INTO `menu` (`menuID`, `ischildID`, `userTypeID`, `langID`, `text`, `alias`) VALUES
@@ -492,7 +508,26 @@ INSERT INTO `menu` (`menuID`, `ischildID`, `userTypeID`, `langID`, `text`, `alia
 -- --------------------------------------------------------
 
 --
--- Table structure for table `recipeDevice`
+-- Структура таблицы `Owner_collectors`
+--
+
+CREATE TABLE `Owner_collectors` (
+  `owner_id` int(11) NOT NULL,
+  `collector_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `Owner_collectors`
+--
+
+INSERT INTO `Owner_collectors` (`owner_id`, `collector_id`) VALUES
+(1, 19),
+(1, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `recipeDevice`
 --
 
 CREATE TABLE `recipeDevice` (
@@ -503,7 +538,7 @@ CREATE TABLE `recipeDevice` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `recipeDevice`
+-- Дамп данных таблицы `recipeDevice`
 --
 
 INSERT INTO `recipeDevice` (`deviceID`, `recipeID`, `buttonID`, `price`) VALUES
@@ -514,7 +549,7 @@ INSERT INTO `recipeDevice` (`deviceID`, `recipeID`, `buttonID`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `recipeNames`
+-- Структура таблицы `recipeNames`
 --
 
 CREATE TABLE `recipeNames` (
@@ -526,7 +561,7 @@ CREATE TABLE `recipeNames` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `static`
+-- Структура таблицы `static`
 --
 
 CREATE TABLE `static` (
@@ -539,7 +574,7 @@ CREATE TABLE `static` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `userInfo`
+-- Структура таблицы `userInfo`
 --
 
 CREATE TABLE `userInfo` (
@@ -549,7 +584,7 @@ CREATE TABLE `userInfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `userInfo`
+-- Дамп данных таблицы `userInfo`
 --
 
 INSERT INTO `userInfo` (`userID`, `userParamNameID`, `userParamValueID`) VALUES
@@ -560,7 +595,7 @@ INSERT INTO `userInfo` (`userID`, `userParamNameID`, `userParamValueID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `userParamNames`
+-- Структура таблицы `userParamNames`
 --
 
 CREATE TABLE `userParamNames` (
@@ -570,7 +605,7 @@ CREATE TABLE `userParamNames` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `userParamNames`
+-- Дамп данных таблицы `userParamNames`
 --
 
 INSERT INTO `userParamNames` (`userParamNameID`, `langID`, `text`) VALUES
@@ -579,7 +614,7 @@ INSERT INTO `userParamNames` (`userParamNameID`, `langID`, `text`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `userParamValues`
+-- Структура таблицы `userParamValues`
 --
 
 CREATE TABLE `userParamValues` (
@@ -588,7 +623,7 @@ CREATE TABLE `userParamValues` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `userParamValues`
+-- Дамп данных таблицы `userParamValues`
 --
 
 INSERT INTO `userParamValues` (`userParamValueID`, `text`) VALUES
@@ -599,7 +634,7 @@ INSERT INTO `userParamValues` (`userParamValueID`, `text`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Структура таблицы `users`
 --
 
 CREATE TABLE `users` (
@@ -613,20 +648,21 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
+-- Дамп данных таблицы `users`
 --
 
 INSERT INTO `users` (`userID`, `username`, `password`, `host`, `userTypeID`, `email`, `name`) VALUES
 (1, 'Owner', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 2, 'arm@mail.rukkk', 'Armen'),
 (3, 'Admin', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 1, 'ars@mail.ru', 'Gago'),
-(4, 'Collector', 'd41d8cd98f00b204e9800998ecf8427e', 'coffeev2', 3, 'ars@mail.ru1111', 'Gago5411111222'),
-(14, 'Arsen12', 'd41d8cd98f00b204e9800998ecf8427es', 'coffeev2', 2, 'ars@23@nm.ru', 'Arsen'),
-(15, 'Abo12', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 2, 'arm@z-sof.net', 'Abo');
+(4, 'Collector', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 3, 'ars@mail.ru1111', 'Gago5411111222'),
+(14, 'Arsen12', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 2, 'ars@23@nm.ru', 'Arsen'),
+(15, 'Abo12', '098f6bcd4621d373cade4e832627b4f6', 'coffeev2', 2, 'arm@z-sof.net', 'Abo'),
+(19, 'kalo', 'AoOWYC4Jrr', 'coffeev2', 3, 'lolo@mail.ru', 'lolo');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `userTypes`
+-- Структура таблицы `userTypes`
 --
 
 CREATE TABLE `userTypes` (
@@ -636,7 +672,7 @@ CREATE TABLE `userTypes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `userTypes`
+-- Дамп данных таблицы `userTypes`
 --
 
 INSERT INTO `userTypes` (`userTypeID`, `langID`, `text`) VALUES
@@ -647,7 +683,7 @@ INSERT INTO `userTypes` (`userTypeID`, `langID`, `text`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vm_types`
+-- Структура таблицы `vm_types`
 --
 
 CREATE TABLE `vm_types` (
@@ -658,7 +694,7 @@ CREATE TABLE `vm_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `vm_types`
+-- Дамп данных таблицы `vm_types`
 --
 
 INSERT INTO `vm_types` (`vm_type_id`, `name`, `button_count`, `image`) VALUES
@@ -666,13 +702,12 @@ INSERT INTO `vm_types` (`vm_type_id`, `name`, `button_count`, `image`) VALUES
 (2, 'VM85555555', 14, 'vm85.png'),
 (3, '10', 15, 'vm.jpg'),
 (14, 'test 1222', 0, '0'),
-(17, 'f', 0, '0'),
-(19, 'testrrrrrr', 0, '0');
+(17, 'f', 0, '0');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vm_type_ingredients`
+-- Структура таблицы `vm_type_ingredients`
 --
 
 CREATE TABLE `vm_type_ingredients` (
@@ -681,7 +716,7 @@ CREATE TABLE `vm_type_ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `vm_type_ingredients`
+-- Дамп данных таблицы `vm_type_ingredients`
 --
 
 INSERT INTO `vm_type_ingredients` (`vm_type_id`, `ingredientsID`) VALUES
@@ -706,239 +741,242 @@ INSERT INTO `vm_type_ingredients` (`vm_type_id`, `ingredientsID`) VALUES
 (18, 26),
 (19, 22),
 (19, 23),
-(19, 24);
+(19, 24),
+(20, 25),
+(20, 26),
+(20, 27);
 
 --
--- Indexes for dumped tables
+-- Индексы сохранённых таблиц
 --
 
 --
--- Indexes for table `boardDevice`
+-- Индексы таблицы `boardDevice`
 --
 ALTER TABLE `boardDevice`
   ADD PRIMARY KEY (`deviceID`,`boardID`);
 
 --
--- Indexes for table `boards`
+-- Индексы таблицы `boards`
 --
 ALTER TABLE `boards`
   ADD PRIMARY KEY (`boardID`),
   ADD UNIQUE KEY `UID` (`UID`);
 
 --
--- Indexes for table `deviceParamNames`
+-- Индексы таблицы `deviceParamNames`
 --
 ALTER TABLE `deviceParamNames`
   ADD PRIMARY KEY (`deviceParamNameID`,`langID`);
 
 --
--- Indexes for table `deviceParamValues`
+-- Индексы таблицы `deviceParamValues`
 --
 ALTER TABLE `deviceParamValues`
   ADD PRIMARY KEY (`deviceParamValueID`);
 
 --
--- Indexes for table `deviceTypes`
+-- Индексы таблицы `deviceTypes`
 --
 ALTER TABLE `deviceTypes`
   ADD PRIMARY KEY (`deviceTypeID`);
 
 --
--- Indexes for table `deviceUsers`
+-- Индексы таблицы `deviceUsers`
 --
 ALTER TABLE `deviceUsers`
   ADD PRIMARY KEY (`deviceID`,`userID`);
 
 --
--- Indexes for table `errors`
+-- Индексы таблицы `errors`
 --
 ALTER TABLE `errors`
   ADD PRIMARY KEY (`errorID`,`langID`);
 
 --
--- Indexes for table `eventType`
+-- Индексы таблицы `eventType`
 --
 ALTER TABLE `eventType`
   ADD PRIMARY KEY (`eventTypeID`);
 
 --
--- Indexes for table `ingredients`
+-- Индексы таблицы `ingredients`
 --
 ALTER TABLE `ingredients`
   ADD PRIMARY KEY (`ingredientsID`);
 
 --
--- Indexes for table `ingredientsName`
+-- Индексы таблицы `ingredientsName`
 --
 ALTER TABLE `ingredientsName`
   ADD PRIMARY KEY (`ingredientsNameID`);
 
 --
--- Indexes for table `languages`
+-- Индексы таблицы `languages`
 --
 ALTER TABLE `languages`
   ADD PRIMARY KEY (`langID`);
 
 --
--- Indexes for table `loggedUsers`
+-- Индексы таблицы `loggedUsers`
 --
 ALTER TABLE `loggedUsers`
   ADD PRIMARY KEY (`userID`);
 
 --
--- Indexes for table `logs`
+-- Индексы таблицы `logs`
 --
 ALTER TABLE `logs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `measurement_units`
+-- Индексы таблицы `measurement_units`
 --
 ALTER TABLE `measurement_units`
   ADD PRIMARY KEY (`measurement_unitsID`);
 
 --
--- Indexes for table `menu`
+-- Индексы таблицы `menu`
 --
 ALTER TABLE `menu`
   ADD PRIMARY KEY (`menuID`);
 
 --
--- Indexes for table `recipeDevice`
+-- Индексы таблицы `recipeDevice`
 --
 ALTER TABLE `recipeDevice`
   ADD PRIMARY KEY (`deviceID`);
 
 --
--- Indexes for table `recipeNames`
+-- Индексы таблицы `recipeNames`
 --
 ALTER TABLE `recipeNames`
   ADD PRIMARY KEY (`recipeNameID`);
 
 --
--- Indexes for table `static`
+-- Индексы таблицы `static`
 --
 ALTER TABLE `static`
   ADD PRIMARY KEY (`staticID`,`alias`);
 
 --
--- Indexes for table `userParamNames`
+-- Индексы таблицы `userParamNames`
 --
 ALTER TABLE `userParamNames`
   ADD PRIMARY KEY (`userParamNameID`,`langID`);
 
 --
--- Indexes for table `userParamValues`
+-- Индексы таблицы `userParamValues`
 --
 ALTER TABLE `userParamValues`
   ADD PRIMARY KEY (`userParamValueID`);
 
 --
--- Indexes for table `users`
+-- Индексы таблицы `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`userID`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indexes for table `userTypes`
+-- Индексы таблицы `userTypes`
 --
 ALTER TABLE `userTypes`
   ADD PRIMARY KEY (`userTypeID`,`langID`);
 
 --
--- Indexes for table `vm_types`
+-- Индексы таблицы `vm_types`
 --
 ALTER TABLE `vm_types`
   ADD PRIMARY KEY (`vm_type_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT для сохранённых таблиц
 --
 
 --
--- AUTO_INCREMENT for table `boards`
+-- AUTO_INCREMENT для таблицы `boards`
 --
 ALTER TABLE `boards`
-  MODIFY `boardID` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `boardID` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `deviceParamNames`
+-- AUTO_INCREMENT для таблицы `deviceParamNames`
 --
 ALTER TABLE `deviceParamNames`
   MODIFY `deviceParamNameID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `deviceParamValues`
+-- AUTO_INCREMENT для таблицы `deviceParamValues`
 --
 ALTER TABLE `deviceParamValues`
-  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `deviceTypes`
+-- AUTO_INCREMENT для таблицы `deviceTypes`
 --
 ALTER TABLE `deviceTypes`
   MODIFY `deviceTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `deviceUsers`
+-- AUTO_INCREMENT для таблицы `deviceUsers`
 --
 ALTER TABLE `deviceUsers`
-  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `ingredients`
+-- AUTO_INCREMENT для таблицы `ingredients`
 --
 ALTER TABLE `ingredients`
-  MODIFY `ingredientsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `ingredientsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT for table `ingredientsName`
+-- AUTO_INCREMENT для таблицы `ingredientsName`
 --
 ALTER TABLE `ingredientsName`
   MODIFY `ingredientsNameID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `logs`
+-- AUTO_INCREMENT для таблицы `logs`
 --
 ALTER TABLE `logs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `measurement_units`
+-- AUTO_INCREMENT для таблицы `measurement_units`
 --
 ALTER TABLE `measurement_units`
   MODIFY `measurement_unitsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `menu`
+-- AUTO_INCREMENT для таблицы `menu`
 --
 ALTER TABLE `menu`
   MODIFY `menuID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `recipeNames`
+-- AUTO_INCREMENT для таблицы `recipeNames`
 --
 ALTER TABLE `recipeNames`
   MODIFY `recipeNameID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `userParamValues`
+-- AUTO_INCREMENT для таблицы `userParamValues`
 --
 ALTER TABLE `userParamValues`
   MODIFY `userParamValueID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- AUTO_INCREMENT for table `vm_types`
+-- AUTO_INCREMENT для таблицы `vm_types`
 --
 ALTER TABLE `vm_types`
-  MODIFY `vm_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `vm_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
