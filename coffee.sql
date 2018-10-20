@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Окт 19 2018 г., 17:57
+-- Время создания: Окт 20 2018 г., 13:47
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -359,7 +359,17 @@ INSERT INTO `ingredients` (`ingredientsID`, `ingredientNameID`, `unitVending`, `
 (24, 7, '0', '0'),
 (25, 3, '0', '0'),
 (26, 5, '0', '0'),
-(27, 7, '0', '0');
+(27, 7, '0', '0'),
+(28, 6, '0', '0'),
+(29, 6, '0', '0'),
+(30, 6, '0', '0'),
+(31, 6, '0', '0'),
+(32, 6, '0', '0'),
+(33, 6, '0', '0'),
+(34, 6, '0', '0'),
+(35, 6, '0', '0'),
+(36, 6, '0', '0'),
+(37, 6, '0', '0');
 
 -- --------------------------------------------------------
 
@@ -903,7 +913,7 @@ ALTER TABLE `deviceParamNames`
 -- AUTO_INCREMENT для таблицы `deviceParamValues`
 --
 ALTER TABLE `deviceParamValues`
-  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `deviceParamValueID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT для таблицы `deviceTypes`
@@ -915,13 +925,13 @@ ALTER TABLE `deviceTypes`
 -- AUTO_INCREMENT для таблицы `deviceUsers`
 --
 ALTER TABLE `deviceUsers`
-  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `deviceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `ingredients`
 --
 ALTER TABLE `ingredients`
-  MODIFY `ingredientsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `ingredientsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT для таблицы `ingredientsName`
@@ -963,13 +973,13 @@ ALTER TABLE `userParamValues`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT для таблицы `vm_types`
 --
 ALTER TABLE `vm_types`
-  MODIFY `vm_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `vm_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
