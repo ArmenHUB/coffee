@@ -256,7 +256,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                 for ($i=0;$i < count($device_id);$i++) {
                     $device_id1 = $device_id[$i];
                     $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`)");
-                    if($data1) {
+                    if(empty($data1)) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
                             $ingr_id = $value['ingredientsID'];
@@ -412,7 +412,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "2": // hour
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`), hour(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '{$device_id1}' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`), hour(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -435,7 +435,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "3": // day
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '{$device_id1}' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -458,7 +458,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "4": // month
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '{$device_id1}' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -481,8 +481,8 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "5": // year
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`)");
-                    if($data1){
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '{$device_id1}' GROUP BY year(`action_log`.`timestamp`)");
+                    if(!empty($data1)){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
                             $date = $value['timestamp'];
