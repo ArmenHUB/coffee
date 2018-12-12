@@ -118,11 +118,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                     array_push($arr_send, $arr);
                 }
             }
-            else{
-                return FALSE;
-            }
         }
-        return $arr_send;
+        if(empty($arr_send)){
+            return FALSE;
+        }else{
+            return $arr_send;
+        }
     }
     else{
        // UPDATE `action_log` SET `timestamp` = '2018-10-01 15:31:45' WHERE `count` = '700'
@@ -144,12 +145,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                             array_push($arr_send, $arr);
                         }
                     }
-                    else{
-                        return FALSE;
-                    }
-
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "1": // all
                 for ($i=0;$i < count($device_id);$i++){
@@ -168,11 +169,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                             array_push($arr_send, $arr);
                         }
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "2": // hour
                 for ($i=0;$i < count($device_id);$i++) {
@@ -205,12 +207,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
-
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "3": // day
                 for ($i=0;$i < count($device_id);$i++) {
@@ -243,11 +245,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "4": // month
                 for ($i=0;$i < count($device_id);$i++) {
@@ -280,11 +283,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "5": // month
                 for ($i=0;$i < count($device_id);$i++) {
@@ -317,11 +321,12 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
         }
     }
@@ -372,11 +377,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "1": // all
                 for ($i=0;$i < count($device_id);$i++){
@@ -396,11 +402,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "2": // hour
                 for ($i=0;$i < count($device_id);$i++){
@@ -418,11 +425,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "3": // day
                 for ($i=0;$i < count($device_id);$i++){
@@ -440,11 +448,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "4": // month
                 for ($i=0;$i < count($device_id);$i++){
@@ -462,11 +471,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
             case "5": // year
                 for ($i=0;$i < count($device_id);$i++){
@@ -484,11 +494,12 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
                         }
 
                     }
-                    else{
-                        return FALSE;
-                    }
                 }
-                return $arr_send;
+                if(empty($arr_send)){
+                    return FALSE;
+                }else{
+                    return $arr_send;
+                }
                 break;
         }
     // return [
