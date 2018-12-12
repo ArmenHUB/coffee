@@ -104,7 +104,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
         $data = $con->queryNoDML("SELECT `deviceID` FROM `deviceUsers` WHERE `userID`='$user_id'");
         for ($i=0; $i < count($data); $i++) {
             $device_id = $data[$i]['deviceID'];
-            $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`,`timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`deviceID` = '$device_id'  AND  `action_log`.`type` NOT IN ('incasation') AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND 1 GROUP BY `timestamp`");
+            $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`,`timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`deviceID` = '$device_id'  AND  `action_log`.`type` NOT IN ('vending') AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND 1 GROUP BY `timestamp`");
             if($data1){
                 foreach ($data1 as $key => $value) {
                     $arr = array();
@@ -130,7 +130,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "0": // all
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, `timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND  `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND 1 GROUP BY `timestamp`");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, `timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND  `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY `timestamp`");
                     if($data1){
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -154,7 +154,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "1": // all
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, `timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND  1 GROUP BY `timestamp`");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`), GROUP_CONCAT(`count`) AS `count`, `timestamp` FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND  1 GROUP BY `timestamp`");
                     if($data1) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -177,7 +177,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "2": // hour
                 for ($i=0;$i < count($device_id);$i++) {
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`), day(`timestamp`), hour(`timestamp`)");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`), day(`timestamp`), hour(`timestamp`)");
                     if($data1) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -215,7 +215,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "3": // day
                 for ($i=0;$i < count($device_id);$i++) {
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`), day(`timestamp`)");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`), day(`timestamp`)");
                     if($data1) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -252,7 +252,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "4": // month
                 for ($i=0;$i < count($device_id);$i++) {
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`)");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year, month(`timestamp`) AS Month FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY Year(`timestamp`), month(`timestamp`)");
                     if($data1) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -289,7 +289,7 @@ function getEnchashementTable($device_id, $scale, $date_range,$user_id)
             case "5": // month
                 for ($i=0;$i < count($device_id);$i++) {
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('incasation') AND 1 GROUP BY Year(`timestamp`)");
+                    $data1 = $con->queryNoDML("SELECT `deviceID`,GROUP_CONCAT(`action_log`.`ingredientsID`),GROUP_CONCAT(`count`) AS `count`,Year(`timestamp`) AS Year FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `ingredientsName`.`ingredientsNameID` IN ($arr_val[0],$arr_val[1]) AND `action_log`.`timestamp` BETWEEN '$datetime_1' AND '$datetime_2' AND `action_log`.`deviceID` = '$device_id1' AND `action_log`.`type` NOT IN ('vending') AND 1 GROUP BY Year(`timestamp`)");
                     if($data1) {
                         foreach ($data1 as $key => $value) {
                             $arr = array();
@@ -405,7 +405,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "2": // hour
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' THEN `count` END) vending, SUM(case when `type` = 'incasation' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`), hour(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`), hour(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -427,7 +427,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "3": // day
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' THEN `count` END) vending, SUM(case when `type` = 'incasation' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -449,7 +449,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "4": // month
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' THEN `count` END) vending, SUM(case when `type` = 'incasation' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -471,7 +471,7 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
             case "5": // year
                 for ($i=0;$i < count($device_id);$i++){
                     $device_id1 = $device_id[$i];
-                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' THEN `count` END) vending, SUM(case when `type` = 'incasation' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`)");
+                    $data1 = $con->queryNoDML("Select `action_log`.`timestamp` AS 'timestamp', GROUP_CONCAT(`ingredientsID`), SUM(case when `type` = 'cash' THEN `count` END) cash, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[2]' THEN `count` END) vending, SUM(case when `type` = 'vending' AND `action_log`.`ingredientsID` = ' $arr_val[0]' THEN `count` END) incasation from `action_log` WHERE (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND `timestamp` BETWEEN '$datetime_1' AND '$datetime_2' GROUP BY year(`action_log`.`timestamp`)");
                     if($data1){
                         $arr = array();
                         foreach ($data1 as $key => $value) {
@@ -500,3 +500,9 @@ function getVendingTable($device_id, $scale, $date_range,$user_id)
     //     ]
     // ];
 }
+
+// SELECT  `action_log`.`timestamp` AS Date,`action_log`.`ingredientsID`,year(`timestamp`) AS Year, month(`timestamp`) AS Month, day(`timestamp`) AS Day, hour(`timestamp`) AS Hour, minute(`timestamp`) AS Minute, `ingredientsName`.`text` AS ingr_name, sum(`count`) AS CashOut FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '2018-10-12 12:09:11' AND '2018-10-13 11:11:11' AND `action_log`.`deviceID` = '1'  GROUP BY  `timestamp`,`ingredientsID`, year(`timestamp`), month(`timestamp`), day(`timestamp`), hour(`timestamp`), minute(`timestamp`)
+
+
+
+//SELECT GROUP_CONCAT(`ingredientsName`.`ingredientsNameID`) AS igr_name_id, `action_log`.`timestamp` AS 'timestamp',GROUP_CONCAT(`action_log`.`count`) AS count FROM `action_log` INNER JOIN `ingredients` ON `action_log`.`ingredientsID` = `ingredients`.`ingredientsID` INNER JOIN `ingredientsName` ON `ingredientsName`.`ingredientsNameID` = `ingredients`.`ingredientNameID` WHERE `timestamp` BETWEEN '2017-12-12 12:12:12' AND '2019-12-12 12:12:12' AND `action_log`.`deviceID` = '5' AND `ingredientsName`.`ingredientsNameID` IN ('3','5','7') AND (`action_log`.`ingredientsID`,`action_log`.`type`) NOT IN (SELECT `action_log`.`ingredientsID`,`action_log`.`type` FROM `action_log` WHERE `ingredientsID` = '3' AND `type` = 'cash') AND 1 GROUP BY year(`action_log`.`timestamp`), month(`action_log`.`timestamp`), day(`action_log`.`timestamp`)
