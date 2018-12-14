@@ -26,7 +26,6 @@ date_default_timezone_set('America/Los_Angeles');
              break;
          case "enchashement":
              $data = $params->data;
-       
              $result = getEnchashementTable($data->device_id,$data->scale, $data->date_range,$income_data->user_id);
 
              if (gettype($result) == 'integer') { // return error number
